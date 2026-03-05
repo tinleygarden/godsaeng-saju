@@ -136,24 +136,38 @@ class AIAnalysis:
             print(f"Premium AI 분석 오류: {e}")
             return {}
 
+    def _ensure_model(self):
+        """API 키를 다시 확인하고 모델이 없으면 초기화합니다."""
+        if not self.api_key:
+            self.api_key = os.getenv("GEMINI_API_KEY")
+            if self.api_key:
+                genai.configure(api_key=self.api_key)
+                self.free_model = genai.GenerativeModel("gemini-1.5-flash")
+                self.premium_model = genai.GenerativeModel("gemini-1.5-pro")
+        return self.free_model is not None
+
     def get_android_free_analysis(self, name, gender, pillars, ohaeng, ten_stars_list, current_daewun, birth_context, oracle_number):
         """안드로이드 웹뷰 앱의 무료 유저를 위한 빠른 심층 AI 분석 (Gemini 1.5 Flash 사용, 2개 항목만 추출)"""
-        if not self.free_model:
+        if not self._ensure_model():
             print("Warning: GEMINI_API_KEY not found. Skipping Android Free AI analysis.")
-            return {}
+            return {
+                "reason_to_live": f"{name}님의 사주 분석 엔진을 가동하는 중입니다. 잠시 후 다시 확인해 주세요!",
+                "energy_charm": "현재 데이터 연결 상태를 확인 중입니다. 곧 멋진 분석 결과로 찾아올게요!"
+            }
 
-        master_knowledge = self._load_knowledge_base()
-        ohaeng_str = ", ".join([f"{k}({v}%)" for k, v in ohaeng['percentages'].items()])
-        
-        pillars_summary = (
-            f"연:[{pillars['year']['gan']}{pillars['year']['zhi']}] "
-            f"월:[{pillars['month']['gan']}{pillars['month']['zhi']}] "
-            f"일:[{pillars['day']['gan']}{pillars['day']['zhi']}] "
-            f"시:[{pillars['hour']['gan']}{pillars['hour']['zhi']}]"
-        )
-        day_stem = pillars['day']['gan']
+        try:
+            master_knowledge = self._load_knowledge_base()
+            ohaeng_str = ", ".join([f"{k}({v}%)" for k, v in ohaeng['percentages'].items()])
+            
+            pillars_summary = (
+                f"연:[{pillars['year']['gan']}{pillars['year']['zhi']}] "
+                f"월:[{pillars['month']['gan']}{pillars['month']['zhi']}] "
+                f"일:[{pillars['day']['gan']}{pillars['day']['zhi']}] "
+                f"시:[{pillars['hour']['gan']}{pillars['hour']['zhi']}]"
+            )
+            day_stem = pillars['day']['gan']
 
-        system_instruction = f"""
+            system_instruction = f"""
 [System Role]
 당신은 'GLOW갓생사주' 앱의 다정하고 지혜로운 수호천사입니다. 
 당신의 목표는 사주팔자 데이터를 기반으로 사람들에게 그들만의 고유한 가치와 희망을 찾아주는 것입니다.
@@ -165,15 +179,14 @@ class AIAnalysis:
 3. 사주의 단점(기신, 신약, 공망 등)은 '채워나가야 할 인생의 여백'이나 '조심하면 더 크게 성장할 수 있는 도약점'으로 부드럽게 재해석하세요.
 
 [특별 지침: 마스터의 비급 🎇]
-아래 첨부된 내용은 마스터께서 직접 정리하신 파워풀한 명리 해석 비법입니다.
-당신은 사주를 분석할 때, 반드시 아래 비급 자료의 핵심 개념(격국, 강약, 조후, 용신, 신살, 대운 등)을 최우선으로 적용하여 깊이 있는 결과물을 만들어야 합니다.
+아래 첨부된 내용은 마스터께서 직접 정리하신 파워풀한 명리 해석 비법입니다. (내용이 없으면 일반적인 사주 원리로 분석하세요)
 
 <마스터의 비급 데이터>
-{master_knowledge}
+{master_knowledge if master_knowledge else "일반 명리 원칙에 따라 분석"}
 </마스터의 비급 데이터>
 """
 
-        prompt = f"""
+            prompt = f"""
 # Input Data
 - 이름: {name}, 성별: {gender}, 나이/생년: {birth_context}
 - 본원(일간): {day_stem}
@@ -183,13 +196,11 @@ class AIAnalysis:
 - 현재 대운: {current_daewun}
 
 # Output JSON Structure
-다음 2가지 키를 가진 JSON 형식으로만 정확히 출력해 주세요. 각 항목은 따뜻한 위로와 전문적인 사주 분석이 결합된 에세이 형식으로 작성해 주세요. (마크다운 코드블록이나 불필요한 설명을 넣지 마세요)
+다음 2가지 키를 가진 JSON 형식으로만 정확히 출력해 주세요. 각 항목은 따뜻한 위로와 전문적인 사주 분석이 결합된 에세이 형식으로 작성해 주세요.
 
 1. "reason_to_live": "[Page 1] 세상에 태어난 아름다운 이유 (본질/격국 기반 칭찬)"
 2. "energy_charm": "[Page 2] 나를 움직이는 에너지와 숨겨진 매력 (신강약/신살 기반)"
 """
-
-        try:
             response = self.free_model.generate_content(
                 contents=f"{system_instruction}\n\n{prompt}",
                 generation_config=genai.GenerationConfig(
@@ -200,12 +211,21 @@ class AIAnalysis:
             return json.loads(response.text)
         except Exception as e:
             print(f"Android Free AI 분석 오류: {e}")
-            return {}
+            return {
+                "reason_to_live": f"{name}님의 사주 기운이 너무 강하여 AI가 잠시 숨을 고르고 있습니다. 잠시 후 다시 시도해 주세요!",
+                "energy_charm": "우주의 기운을 불러오는 중입니다. 곧 결과를 확인하실 수 있습니다."
+            }
 
     def get_today_fortune(self, name, day_stem, pillars, ohaeng):
         """오늘의 운세 분석 (JSON 반환)"""
-        if not self.free_model:
-            return None
+        if not self._ensure_model():
+            return {
+                "one_line": f"{name}님, 오늘을 준비하는 중이에요!",
+                "keyword": "준비",
+                "good_point": "새로운 시작을 위한 에너지를 모으고 있습니다.",
+                "bad_point": "잠시만 기다려 주시면 곧 운세가 도착합니다.",
+                "advice": "서두르지 말고 천천히 오늘을 맞이해 보세요."
+            }
             
         from datetime import datetime
         today = datetime.now().strftime("%Y-%m-%d")
@@ -239,4 +259,10 @@ JSON 형식:
             return json.loads(response.text)
         except Exception as e:
             print(f"Today Fortune AI 분석 오류: {e}")
-            return None
+            return {
+                "one_line": f"{name}님, 오늘의 운세 채널을 맞추는 중입니다!",
+                "keyword": "대기",
+                "good_point": "잠시 후면 더 정확한 오늘의 행운을 보실 수 있어요.",
+                "bad_point": "데이터 수신이 지연되고 있으니 조금만 기다려 주세요.",
+                "advice": "따뜻한 차 한 잔 마시며 운명을 기다려보는 건 어떨까요?"
+            }
