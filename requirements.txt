@@ -1,0 +1,8 @@
+Flask
+skyfield
+pytz
+openai
+python-dotenv
+requests
+numpy
+korean_lunar_calendar

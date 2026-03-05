@@ -1,0 +1,8 @@
+[build]
+  command = "# No build command needed for simple usage"
+  publish = "templates"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

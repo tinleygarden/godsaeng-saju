@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "app.vercel.glow_saju.twa",
+            "sha256_cert_fingerprints": [
+                "A1:9B:A9:01:8B:2C:44:C9:6E:AB:4F:AC:F8:72:20:9E:3E:27:8F:B3:27:67:79:49:1E:10:BC:7E:4A:95:97:F1"
+            ]
+        }
+    }
+]

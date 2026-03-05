@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOW글로우:갓생사주 - 명식 분석</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- PWA Setup -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Premium Dark Theme & Saju Styles -->
+        <style>
+            :root {
+                --bg-deep: #0f172a;
+                --glass-bg: rgba(10, 15, 30, 0.85);
+                /* Darker for better contrast */
+                --glass-border: rgba(255, 255, 255, 0.1);
+                --primary: #fbbf24;
+                --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+
+                --wood: #34d399;
+                --fire: #f87171;
+                --earth: #fbbf24;
+                --metal: #e2e8f0;
+                --water: #60a5fa;
+            }
+
+            body {
+                background-color: #0f172a;
+                /* Keep the user-requested lighter background */
+                background-image:
+                    radial-gradient(circle at 50% 0%, #312e81 0%, #0f172a 60%, #000000 100%),
+                    url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='stars' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(255,255,255,0.8)'/%3E%3Ccircle cx='50' cy='80' r='0.5' fill='rgba(255,255,255,0.6)'/%3E%3Ccircle cx='120' cy='40' r='0.8' fill='rgba(255,255,255,0.7)'/%3E%3Ccircle cx='180' cy='150' r='0.6' fill='rgba(255,255,255,0.5)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23stars)'/%3E%3C/svg%3E");
+                background-attachment: fixed;
+                color: var(--text-main);
+                font-family: 'Pretendard', sans-serif;
+                min-height: 100vh;
+                margin: 0;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem 1rem;
+            }
+
+            .glass-card {
+                background: var(--glass-bg);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border);
+                border-radius: 24px;
+                padding: 2rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+                margin-bottom: 2rem;
+            }
+
+            .text-gradient {
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                font-weight: 700;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                margin-bottom: 0.5rem;
+                text-align: center;
+            }
+
+            h3 {
+                color: var(--primary);
+                margin-top: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 0.8rem;
+                margin-bottom: 1.2rem;
+                font-size: 1.2rem;
+            }
+
+            h3 i {
+                margin-right: 0.5rem;
+            }
+
+            /* Revised Saju Table Styles */
+            .saju-table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: center;
+                color: var(--text-main);
+            }
+
+            .saju-table th {
+                padding: 1rem 0.5rem;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            .saju-table td {
+                padding: 1.2rem 0.5rem;
+                /* Revert to original padding for standard tables */
+                vertical-align: middle;
+                border: 1px solid rgba(255, 255, 255, 0.03);
+            }
+
+            /* Main Pillars Specific Styles (The one to fix for mobile) */
+            .main-pillars {
+                table-layout: fixed;
+                /* Only fix layout for the pillars table */
+            }
+
+            .main-pillars td {
+                height: 100px;
+                /* Fixed height ONLY for main pillars */
+                padding: 0.5rem 0.2rem;
+                /* Tighter padding for mobile alignment */
+            }
+
+            /* Category Column Style */
+            .col-category {
+                background: rgba(0, 0, 0, 0.2);
+                font-weight: 600;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+            }
+
+            /* Cell Content Logic */
+            .cell-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                height: 100%;
+            }
+
+            .hanja {
+                font-size: 1.8rem;
+                /* Slightly smaller for mobile safety */
+                font-weight: 700;
+                display: block;
+                line-height: 1.2;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .hanja-sub {
+                display: block;
+                font-size: 0.9rem;
+                opacity: 0.8;
+                font-weight: 400;
+                margin-top: -2px;
+            }
+
+            .ten-god-label {
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                margin-bottom: 4px;
+                white-space: nowrap;
+            }
+
+            .me-cell {
+                background: rgba(251, 191, 36, 0.15);
+                box-shadow: inset 0 0 15px rgba(251, 191, 36, 0.1);
+                position: relative;
+            }
+
+            .me-cell::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border: 2px solid rgba(251, 191, 36, 0.3);
+                border-radius: 12px;
+                pointer-events: none;
+            }
+
+            /* Element Colors */
+            .wood {
+                color: var(--wood);
+            }
+
+            .fire {
+                color: var(--fire);
+            }
+
+            .earth {
+                color: var(--earth);
+            }
+
+            .metal {
+                color: var(--metal);
+            }
+
+            .water {
+                color: var(--water);
+            }
+
+            /* Luck Tables */
+            .luck-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .table-scroll {
+                max-height: 400px;
+                overflow-y: auto;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+            }
+
+            .interactive-table th {
+                position: sticky;
+                top: 0;
+                background: #0f172a;
+                z-index: 10;
+            }
+
+            .interactive-table tbody tr {
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+            .interactive-table tbody tr:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .interactive-table tbody tr.selected {
+                background: rgba(251, 191, 36, 0.15);
+                border-left: 3px solid var(--primary);
+            }
+
+            .btn-primary {
+                display: block;
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+                padding: 1.2rem;
+                box-sizing: border-box;
+                border-radius: 16px;
+                background: var(--primary-gradient);
+                color: #451a03;
+                font-weight: 700;
+                text-align: center;
+                text-decoration: none;
+                transition: all 0.3s;
+                font-size: 1.1rem;
+                box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(217, 119, 6, 0.5);
+            }
+        </style>
+
+        <!-- Header -->
+        <!-- Header -->
+        <header style="text-align: center; margin-bottom: 3rem;">
+            <h1 class="text-gradient" style="font-family: 'Noto Serif KR', serif;">GLOW글로우:갓생사주</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0.8rem;">운명을 읽고 나를 켜다</p>
+            <p style="color: var(--text-main); font-weight: 500; opacity: 0.9;">{{ birth_dt }} <span
+                    style="margin: 0 0.5rem; color: rgba(255,255,255,0.2);">|</span> {{ name }}님의 사주 명식</p>
+        </header>
+
+
+        <!-- ========================================== -->
+        <!-- 오늘의 운세 섹션 (Flash 모델 분석 결과) -->
+        <!-- ========================================== -->
+        {% if interp.today_fortune %}
+        <div class="glass-card"
+            style="margin-bottom: 2rem; border: 1px solid rgba(251, 191, 36, 0.3); background: rgba(15, 23, 42, 0.7);">
+            <div
+                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <i class="fa-solid fa-star" style="color: var(--primary); font-size: 1.5rem;"></i>
+                    <h3
+                        style="margin: 0; border: none; padding: 0; font-family: 'Noto Serif KR', serif; font-size: 1.4rem;">
+                        오늘의 운세</h3>
+                </div>
+                <div style="text-align: right; color: var(--text-muted); font-size: 0.9rem;">
+                    <div style="color: var(--primary); font-weight: 600;">{{ current_date }}</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 2rem 0;">
+                <h4
+                    style="color: var(--primary); font-size: 1.5rem; font-weight: 700; line-height: 1.6; margin-bottom: 1rem; text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);">
+                    "{{ name }}님, {{ interp.today_fortune.one_line }}"
+                </h4>
+                <div
+                    style="display: inline-block; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.95rem; color: var(--primary);">
+                    #{{ interp.today_fortune.keyword }}
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- 좋은 점 -->
+                <div
+                    style="background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 16px; padding: 1.2rem;">
+                    <h5 style="color: #34d399; margin: 0 0 0.8rem 0; font-size: 1.05rem;"><i
+                            class="fa-solid fa-circle-check" style="margin-right: 0.5rem;"></i>좋은 점</h5>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--text-main); opacity: 0.9;">
+                        {{ interp.today_fortune.good_point }}</p>
+                </div>
+
+                <!-- 주의할 점 -->
+                <div
+                    style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 16px; padding: 1.2rem;">
+                    <h5 style="color: #f43f5e; margin: 0 0 0.8rem 0; font-size: 1.05rem;"><i
+                            class="fa-solid fa-circle-exclamation" style="margin-right: 0.5rem;"></i>주의할 점</h5>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--text-main); opacity: 0.9;">
+                        {{ interp.today_fortune.bad_point }}</p>
+                </div>
+            </div>
+
+            <div
+                style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; text-align: center; position: relative;">
+                <p
+                    style="margin: 0; font-size: 1.1rem; line-height: 1.7; font-style: italic; color: #e2e8f0; font-family: 'Noto Serif KR', serif;">
+                    {{ interp.today_fortune.advice }}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+        <!-- 1. Saju Myung-sik (Pillars) - FIXED LAYOUT -->
+        <div class="glass-card">
+            <h3><i class="fa-solid fa-scroll"></i> 사주 원국표</h3>
+            <table class="saju-table main-pillars">
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 21.25%;">
+                    <col style="width: 21.25%;">
+                    <col style="width: 21.25%;">
+                    <col style="width: 21.25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>시주 (Time)</th>
+                        <th>일주 (Day)</th>
+                        <th>월주 (Month)</th>
+                        <th>년주 (Year)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Row 1: Heavenly Stem & Ten Gods -->
+                    <tr>
+                        <td class="col-category">천간<br><small>(Heaven)</small></td>
+                        <!-- Hour -->
+                        <td>
+                            <span class="ten-god-label">{{ interp.ten_gods.hour.gan }}</span>
+                            <span class="hanja {{ pillars.hour.gan_element }}">
+                                {{ pillars.hour.gan }}<span style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.hour.gan, '') }}</span>
+                            </span>
+                        </td>
+                        <!-- Day (Me) -->
+                        <td class="me-cell">
+                            <span class="ten-god-label">본원 (Me)</span>
+                            <span class="hanja {{ pillars.day.gan_element }}">
+                                {{ pillars.day.gan }}<span style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.day.gan, '') }}</span>
+                            </span>
+                        </td>
+                        <!-- Month -->
+                        <td>
+                            <span class="ten-god-label">{{ interp.ten_gods.month.gan }}</span>
+                            <span class="hanja {{ pillars.month.gan_element }}">
+                                {{ pillars.month.gan }}<span
+                                    style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.month.gan, '') }}</span>
+                            </span>
+                        </td>
+                        <!-- Year -->
+                        <td>
+                            <span class="ten-god-label">{{ interp.ten_gods.year.gan }}</span>
+                            <span class="hanja {{ pillars.year.gan_element }}">
+                                {{ pillars.year.gan }}<span style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.year.gan, '') }}</span>
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- Row 2: Earthly Branch & Ten Gods -->
+                    <tr>
+                        <td class="col-category">지지<br><small>(Earth)</small></td>
+                        <!-- Hour -->
+                        <td>
+                            <span class="hanja {{ pillars.hour.zhi_element }}">
+                                {{ pillars.hour.zhi }}<span style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.hour.zhi, '') }}</span>
+                            </span>
+                            <span class="ten-god-label">{{ interp.ten_gods.hour.zhi }}</span>
+                        </td>
+                        <!-- Day -->
+                        <td>
+                            <span class="hanja {{ pillars.day.zhi_element }}">
+                                {{ pillars.day.zhi }}<span style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.day.zhi, '') }}</span>
+                            </span>
+                            <span class="ten-god-label">{{ interp.ten_gods.day.zhi }}</span>
+                        </td>
+                        <!-- Month -->
+                        <td>
+                            <span class="hanja {{ pillars.month.zhi_element }}">
+                                {{ pillars.month.zhi }}<span
+                                    style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.month.zhi, '') }}</span>
+                            </span>
+                            <span class="ten-god-label">{{ interp.ten_gods.month.zhi }}</span>
+                        </td>
+                        <!-- Year -->
+                        <td>
+                            <span class="hanja {{ pillars.year.zhi_element }}">
+                                {{ pillars.year.zhi }}<span style="font-size: 0.6em; margin-left: 2px; opacity: 0.8;">{{
+                                    hanja_map.get(pillars.year.zhi, '') }}</span>
+                            </span>
+                            <span class="ten-god-label">{{ interp.ten_gods.year.zhi }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. Ohaeng Analysis Chart -->
+        <div class="glass-card">
+            <h3><i class="fa-solid fa-chart-pie"></i> 오행 분석 및 분포</h3>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; align-items: center;">
+                <div style="height: 250px; position: relative; width: 100%;">
+                    <canvas id="ohaengChart"></canvas>
+                </div>
+                <div>
+                    <div
+                        style="display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        <span class="badge wood"
+                            style="background: rgba(52, 211, 153, 0.1); padding: 0.5rem 1rem; border-radius: 20px;">목 {{
+                            ohaeng.counts.wood }}</span>
+                        <span class="badge fire"
+                            style="background: rgba(248, 113, 113, 0.1); padding: 0.5rem 1rem; border-radius: 20px;">화
+                            {{ ohaeng.counts.fire }}</span>
+                        <span class="badge earth"
+                            style="background: rgba(251, 191, 36, 0.1); padding: 0.5rem 1rem; border-radius: 20px;">토 {{
+                            ohaeng.counts.earth }}</span>
+                        <span class="badge metal"
+                            style="background: rgba(226, 232, 240, 0.1); padding: 0.5rem 1rem; border-radius: 20px;">금
+                            {{ ohaeng.counts.metal }}</span>
+                        <span class="badge water"
+                            style="background: rgba(96, 165, 250, 0.1); padding: 0.5rem 1rem; border-radius: 20px;">수 {{
+                            ohaeng.counts.water }}</span>
+                    </div>
+                    <p
+                        style="line-height: 1.8; color: var(--text-main); background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; text-align: center;">
+                        {{ ohaeng.balance_text }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3, 4, 5. Interactive Luck Tables (Daewoon, Yeonun, Wolun) -->
+        <div class="luck-grid">
+            <!-- Daewoon Table -->
+            <div class="glass-card">
+                <h3><i class="fa-solid fa-road"></i> 대운 (10년)</h3>
+                <div class="table-scroll">
+                    <table class="saju-table interactive-table" id="daewoonTable">
+                        <colgroup>
+                            <col style="width: 30%;">
+                            <col style="width: 30%;">
+                            <col style="width: 40%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>나이</th>
+                                <th>간지</th>
+                                <th>십성</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Yeonun Table -->
+            <div class="glass-card">
+                <h3><i class="fa-solid fa-calendar-check"></i> 연운 (1년)</h3>
+                <div class="table-scroll">
+                    <table class="saju-table interactive-table" id="yearTable">
+                        <colgroup>
+                            <col style="width: 30%;">
+                            <col style="width: 30%;">
+                            <col style="width: 40%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>연도</th>
+                                <th>간지</th>
+                                <th>십성</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="3" style="padding: 2rem;">대운을 선택하세요</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Wolun Table -->
+            <div class="glass-card">
+                <h3><i class="fa-solid fa-calendar-day"></i> 월운 (1달)</h3>
+                <div class="table-scroll">
+                    <table class="saju-table interactive-table" id="monthTable">
+                        <colgroup>
+                            <col style="width: 40%;">
+                            <col style="width: 60%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>월</th>
+                                <th>간지</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2" style="padding: 2rem;">연도를 선택하세요</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- 갓생사주 프리미엄 체험판 (안드로이드 전용) -->
+        <!-- ===================================== -->
+        {% if interp.premium_ai %}
+        <div style="margin-top: 4rem;">
+            <h2
+                style="text-align: center; color: var(--primary); font-size: 1.8rem; margin-bottom: 2.5rem; font-family: 'Noto Serif KR', serif;">
+                ✨ 갓생사주 스페셜 분석
+            </h2>
+
+            <!-- 1. 나의 본질 -->
+            <div class="glass-card"
+                style="margin-bottom: 2rem; border-top: 4px solid var(--primary); position: relative; overflow: hidden;">
+                <div
+                    style="position: absolute; top: 0; right: 0; padding: 0.5rem 1rem; background: var(--primary); color: #0f172a; font-weight: bold; border-bottom-left-radius: 12px;">
+                    핵심 속성</div>
+                <h3 style="color: var(--primary); font-size: 1.3rem; margin-bottom: 1.5rem; border-bottom: none;"><i
+                        class="fa-solid fa-seedling"></i> 나의 본질과 타고난 무기</h3>
+                <div
+                    style="color: var(--text-main); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 12px;">
+                    {{ interp.premium_ai.reason_to_live }}</div>
+            </div>
+
+            <!-- 2. 나를 움직이는 에너지 -->
+            <div class="glass-card"
+                style="margin-bottom: 2rem; border-top: 4px solid #f43f5e; position: relative; overflow: hidden;">
+                <h3 style="color: #f43f5e; font-size: 1.3rem; margin-bottom: 1.5rem; border-bottom: none;"><i
+                        class="fa-solid fa-fire-flame-curved"></i> 나를 움직이는 에너지와 숨겨진 매력</h3>
+                <div
+                    style="color: var(--text-main); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 12px;">
+                    {{ interp.premium_ai.energy_charm }}</div>
+            </div>
+
+            <!-- Premium Outlink Banner -->
+            <div
+                style="margin-top: 3.5rem; margin-bottom: 3rem; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(244,63,94,0.2) 100%); border: 1px solid rgba(244,63,94,0.3); border-radius: 24px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
+                <div
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 70px; height: 70px; background: rgba(244,63,94,0.2); border-radius: 50%; margin-bottom: 1.5rem; color: #f43f5e; font-size: 2rem;">
+                    <i class="fa-solid fa-unlock-keyhole"></i>
+                </div>
+                <h3
+                    style="color: #f43f5e; font-size: 1.5rem; margin-bottom: 1.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); border:none; display: flex; justify-content: center; text-align: center;">
+                    남은 운명의 퍼즐을 맞춰보세요!</h3>
+                <p
+                    style="color: var(--text-main); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem; opacity: 0.9;">
+                    연애운, 재물운, 그리고 10년의 대운 흐름까지.<br>당신의 더 깊은 숨겨진 운명표찰은 글로우 갓생촌에 준비되어 있습니다.
+                </p>
+                <a href="https://godsaeng.world" target="_blank" class="btn-primary"
+                    style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color: white; box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4);">
+                    글로우 갓생촌에서 전체 운세 보기 <i class="fa-solid fa-arrow-up-right-from-square"
+                        style="margin-left: 0.5rem;"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        <!-- Footer Actions -->
+        <div style="margin-top: 3rem; margin-bottom: 5rem; padding: 0 1rem;">
+            <a href="/" class="btn-primary">
+                <i class="fa-solid fa-rotate-right"></i> 다시 입력하기
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Radar Chart
+        const ohaengData = {{ ohaeng | tojson }};
+        const ctx = document.getElementById('ohaengChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['목 (Wood)', '화 (Fire)', '토 (Earth)', '금 (Metal)', '수 (Water)'],
+                datasets: [{
+                    label: '오행 분포',
+                    data: [ohaengData.counts.wood, ohaengData.counts.fire, ohaengData.counts.earth, ohaengData.counts.metal, ohaengData.counts.water],
+                    backgroundColor: 'rgba(251, 191, 36, 0.4)',
+                    borderColor: '#fbbf24',
+                    pointBackgroundColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        ticks: { display: false },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#94a3b8', font: { size: 12 } }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Luck Data Navigation (Interactive)
+        const daewoonData = {{ interp.daewoon | tojson }};
+        let selectedDaewoonIdx = 0;
+        let selectedYearIdx = 0;
+
+        function renderDaewoon() {
+            const tbody = document.querySelector('#daewoonTable tbody');
+            tbody.innerHTML = '';
+            daewoonData.forEach((dw, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = idx === selectedDaewoonIdx ? 'selected' : '';
+                tr.onclick = () => selectDaewoon(idx);
+                // Extract God name
+                const godMatch = dw.text.match(/\[(.*?)\]/);
+                const god = godMatch ? godMatch[1] : '';
+
+                tr.innerHTML = `
+                    <td>${dw.age}세~</td>
+                    <td><span class="${dw.gan_element}">${dw.gan}</span><span class="${dw.zhi_element}">${dw.zhi}</span></td>
+                    <td><small>${god}</small></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            renderYear(selectedDaewoonIdx);
+        }
+
+        function selectDaewoon(idx) {
+            selectedDaewoonIdx = idx;
+            selectedYearIdx = 0; // Reset
+            renderDaewoon();
+        }
+
+        function renderYear(dwIdx) {
+            const tbody = document.querySelector('#yearTable tbody');
+            tbody.innerHTML = '';
+
+            if (!daewoonData[dwIdx] || !daewoonData[dwIdx].years) return;
+
+            const years = daewoonData[dwIdx].years;
+            years.forEach((y, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = idx === selectedYearIdx ? 'selected' : '';
+                tr.onclick = () => selectYear(idx);
+                tr.innerHTML = `
+                    <td>${y.year}년</td>
+                    <td><span class="${y.gan_element}">${y.gan}</span><span class="${y.zhi_element}">${y.zhi}</span></td>
+                    <td><small>${y.ten_god}</small></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            renderMonth(dwIdx, selectedYearIdx);
+        }
+
+        function selectYear(yIdx) {
+            selectedYearIdx = yIdx;
+            renderYear(selectedDaewoonIdx);
+        }
+
+        function renderMonth(dwIdx, yIdx) {
+            const tbody = document.querySelector('#monthTable tbody');
+            tbody.innerHTML = '';
+
+            if (!daewoonData[dwIdx] || !daewoonData[dwIdx].years[yIdx]) return;
+
+            const months = daewoonData[dwIdx].years[yIdx].wolun_list;
+            months.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${m.month}월</td>
+                    <td><span class="${m.gan_element}">${m.gan}</span><span class="${m.zhi_element}">${m.zhi}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Init on load
+        if (daewoonData && daewoonData.length > 0) {
+            renderDaewoon();
+        }
+    </script>
+</body>
+
+</html>

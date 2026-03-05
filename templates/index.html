@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOW글로우:갓생사주 - 운명을 읽고 나를 켜다</title>
+    <meta property="og:title" content="GLOW글로우:갓생사주 - 운명을 읽고 나를 켜다">
+    <meta property="og:description" content="나의 사주 팔자를 분석하고 갓생을 위한 운명의 지도를 확인하세요.">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- PWA Setup -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <!-- Premium Dark Theme & Layout -->
+    <style>
+        :root {
+            /* Midnight Galaxy Gold Palette */
+            --bg-deep: #0f172a;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #fbbf24;
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 50% 0%, #312e81 0%, #0f172a 60%, #000000 100%);
+            color: var(--text-main);
+            font-family: 'Pretendard', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Aurora Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 60%);
+            animation: pulse 8s ease-in-out infinite alternate;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Typography */
+        h1.text-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+            font-family: 'Noto Serif KR', serif;
+            word-break: keep-all;
+            /* Prevent awkward breaks */
+        }
+
+        @media (max-width: 480px) {
+            h1.text-gradient {
+                font-size: 1.6rem;
+                /* Reduced size for mobile */
+            }
+        }
+
+        /* Form Elements */
+        label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+        }
+
+        input[type=number] {
+            width: 100%;
+            appearance: textfield;
+            -moz-appearance: textfield;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+            /* pure white text */
+            background: rgba(255, 255, 255, 0.05);
+            /* Light Glass */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            /* brighter border */
+            border-radius: 14px;
+            padding: 1rem 0.2rem;
+            transition: all 0.3s;
+        }
+
+        input[type=number]::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+
+        input[type=number]:focus {
+            outline: none;
+            border-color: #a78bfa;
+            /* Violet Glow */
+            background: rgba(255, 255, 255, 0.15);
+            /* More transparent white */
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(167, 139, 250, 0.4);
+            /* Glow effect */
+        }
+
+        /* Flex helpers */
+        .input-group-row {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .toggle-container {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+            padding: 0.4rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 16px;
+            background: var(--primary-gradient);
+            color: #451a03;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.5);
+        }
+
+        /* Force Display Spinners for Mobile */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            opacity: 1;
+            height: 100%;
+            -webkit-appearance: inner-spin-button !important;
+            display: block;
+        }
+    </style>
+
+    <div class="container">
+        <div class="glass-card fade-in">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <h1 class="text-gradient">GLOW글로우:갓생사주</h1>
+                <p style="color: var(--text-muted); letter-spacing: 0.1em; font-size: 0.9rem;">운명을 읽고 나를 켜다</p>
+                <div style="width: 40px; height: 1px; background: var(--primary); margin: 1rem auto 0; opacity: 0.5;">
+                </div>
+            </div>
+
+            <!-- 오늘의 갓생 복주머니 (오라클 카드) -->
+            <div
+                style="margin-bottom: 2.5rem; text-align: center; background: rgba(0,0,0,0.2); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; padding: 1.5rem;">
+                <h3
+                    style="color: var(--primary); margin-top: 0; font-size: 1.1rem; margin-bottom: 1rem; text-align: center !important; width: 100%; display: block;">
+                    ✨ 오늘의 행운 메세지
+                </h3>
+
+                <style>
+                    /* Card 3D Hover Effects Restoration */
+                    .card-container {
+                        perspective: 1000px;
+                        display: inline-block;
+                        margin-bottom: 1rem;
+                    }
+
+                    .glass-card-3d {
+                        transition: transform 0.1s ease, box-shadow 0.1s ease;
+                        transform-style: preserve-3d;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+                        border-radius: 12px;
+                        width: 100%;
+                        max-width: 160px;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .glass-card-3d::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.1) 100%);
+                        z-index: 2;
+                        pointer-events: none;
+                        mix-blend-mode: overlay;
+                    }
+                </style>
+                <div class="card-container" onmousemove="handleCardMove(event, this)"
+                    onmouseleave="handleCardLeave(this)">
+                    <img id="todayCard" src="/static/assets/images/gilsang_oracle/gilsang_cover.webp"
+                        alt="오늘의 행운 메세지 카드" class="glass-card-3d"
+                        onerror="this.src='{{ url_for('static', filename='icon.png') }}'; this.alt='이미지 로딩 대기중...';">
+                </div>
+
+                <script>
+                    function handleCardMove(e, container) {
+                        const card = container.querySelector('.glass-card-3d');
+                        if (!card) return;
+                        const rect = container.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const xc = rect.width / 2;
+                        const yc = rect.height / 2;
+                        const dx = x - xc;
+                        const dy = y - yc;
+                        // Calculate rotation based on distance from center
+                        const rotateY = (dx / xc) * 15; // Max 15 deg
+                        const rotateX = -(dy / yc) * 15;
+
+                        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+                        card.style.boxShadow = `${-dx / 5}px ${-dy / 5}px 30px rgba(251, 191, 36, 0.4), inset 0 0 0 1px rgba(255,255,255,0.4)`;
+                    }
+
+                    function handleCardLeave(container) {
+                        const card = container.querySelector('.glass-card-3d');
+                        if (!card) return;
+                        card.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                        card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.2)';
+                    }
+                </script>
+
+                <button type="button" class="btn-primary"
+                    style="padding: 0.7rem 1.2rem; font-size: 0.9rem; width: auto; margin-top: 0; border-radius: 12px; display: block; margin: 0 auto;"
+                    onclick="drawGilsangCard()">행운 메세지 카드 받기 🧧</button>
+                <div id="cardMessageContainer"
+                    style="display: none; margin-top: 1.5rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(251, 191, 36, 0.4); border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                    <strong id="cardTitle"
+                        style="color: var(--primary); font-size: 1.15rem; display: block; margin-bottom: 0.8rem; letter-spacing: 0.05em; font-family: 'Noto Serif KR', serif;"></strong>
+                    <p id="cardDesc"
+                        style="color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin: 0; word-break: keep-all;">
+                    </p>
+                </div>
+            </div>
+
+            <form id="sajuForm" action="/loading" method="POST" onsubmit="prepareSubmit(event)">
+                <!-- Hidden Inputs for Submission -->
+                <input type="hidden" name="calendar_type" id="calendar_type" value="solar">
+                <input type="hidden" name="birth_date" id="birth_date">
+                <input type="hidden" name="birth_time" id="birth_time_full">
+
+                <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" name="name" required placeholder="예: 홍길동">
+                </div>
+
+                <div class="form-group">
+                    <label>성별</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <label
+                            style="flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255,255,255,0.9); padding: 0.8rem; border-radius: 0.8rem; color: #1e293b; font-weight: 700; border: 1px solid #cbd5e1;">
+                            <input type="radio" name="gender" value="male"> 남성
+                        </label>
+                        <label
+                            style="flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255,255,255,0.9); padding: 0.8rem; border-radius: 0.8rem; color: #1e293b; font-weight: 700; border: 1px solid #cbd5e1;">
+                            <input type="radio" name="gender" value="female" checked> 여성
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Calendar Type Toggle -->
+                <div class="form-group">
+                    <label>양력 / 음력 구분</label>
+                    <div class="toggle-container">
+                        <button type="button" class="toggle-btn active" onclick="setCalendar('solar')">양력
+                            (Solar)</button>
+                        <button type="button" class="toggle-btn" onclick="setCalendar('lunar')">음력 (Lunar)</button>
+                    </div>
+                    <label class="leap-check" id="leapLabel">
+                        <input type="checkbox" name="is_leap" id="is_leap"> 윤달 (Leap Month)
+                    </label>
+                </div>
+
+                <!-- Date Scroller -->
+                <div class="form-group">
+                    <label>생년월일</label>
+                    <div class="input-group-row">
+                        <div class="input-wrapper" style="flex: 1.5;">
+                            <input type="number" id="year" placeholder="YYYY" min="1900" max="2100" required
+                                onwheel="scrollNumber(event, this)" onclick="this.value=''" inputmode="numeric"
+                                autocomplete="off">
+                            <label>년 (Year)</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" id="month" placeholder="MM" min="1" max="12" required
+                                onwheel="scrollNumber(event, this)" onclick="this.value=''" inputmode="numeric"
+                                autocomplete="off">
+                            <label>월 (Month)</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" id="day" placeholder="DD" min="1" max="31" required
+                                onwheel="scrollNumber(event, this)" onclick="this.value=''" inputmode="numeric"
+                                autocomplete="off">
+                            <label>일 (Day)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Scroller -->
+                <div class="form-group">
+                    <label>태어난 시간</label>
+                    <div class="input-group-row">
+                        <div class="input-wrapper">
+                            <input type="number" id="hour" placeholder="HH" min="0" max="23" required
+                                onwheel="scrollNumber(event, this)" onclick="this.value=''" inputmode="numeric"
+                                autocomplete="off">
+                            <label>시 (Hour)</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" id="minute" placeholder="MM" min="0" max="59" required
+                                onwheel="scrollNumber(event, this)" onclick="this.value=''" inputmode="numeric"
+                                autocomplete="off">
+                            <label>분 (Minute)</label>
+                        </div>
+                        <div class="input-wrapper" style="flex: 0.5; visibility: hidden;">
+                            <!-- Spacer for alignment -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">출생 지역 (경도 보정)</label>
+                    <select id="city" name="city"
+                        style="width: 100%; padding: 1rem; border: 2px solid #cbd5e1; border-radius: 1rem; background: #ffffff; color: #0f172a; font-weight: 700; font-size: 1rem;">
+                        <option value="Seoul" selected>서울 (Seoul)</option>
+                        <option value="Incheon">인천 (Incheon)</option>
+                        <option value="Busan">부산 (Busan)</option>
+                        <option value="Daegu">대구 (Daegu)</option>
+                        <option value="Gwangju">광주 (Gwangju)</option>
+                        <option value="Daejeon">대전 (Daejeon)</option>
+                        <option value="Ulsan">울산 (Ulsan)</option>
+                        <option value="Jeju">제주 (Jeju)</option>
+                        <option value="Sejong">세종 (Sejong)</option>
+                        <option value="Gangneung">강릉 (Gangneung)</option>
+                        <option value="Mokpo">목포 (Mokpo)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 1rem;">
+                    사주 원국표 확인하기 <i class="fa-solid fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                </button>
+            </form>
+
+            <script>
+                // Initialize with default 2000.01.01 00:00
+                document.getElementById('year').value = 2000;
+                document.getElementById('month').value = 1;
+                document.getElementById('day').value = 1;
+                document.getElementById('hour').value = 0;
+                document.getElementById('minute').value = 0;
+
+                function setCalendar(type) {
+                    document.getElementById('calendar_type').value = type;
+                    const btns = document.querySelectorAll('.toggle-btn');
+                    btns.forEach(b => b.classList.remove('active'));
+                    if (type === 'solar') {
+                        btns[0].classList.add('active');
+                        document.getElementById('leapLabel').classList.remove('visible');
+                    } else {
+                        btns[1].classList.add('active');
+                        document.getElementById('leapLabel').classList.add('visible');
+                    }
+                }
+
+                function scrollNumber(e) {
+                    // Prevent page scroll
+                    e.preventDefault();
+                    // Determine direction
+                    const delta = Math.sign(e.deltaY) * -1; // Standardize: Scroll UP (negative deltaY) -> Increase Value
+                    const input = e.target;
+                    let val = parseInt(input.value) || 0;
+                    val += delta;
+
+                    // Min/Max constraints
+                    const min = parseInt(input.min);
+                    const max = parseInt(input.max);
+                    if (val > max) val = min;
+                    if (val < min) val = max;
+
+                    input.value = val;
+                }
+
+                function prepareSubmit(e) {
+                    e.preventDefault();
+                    const y = document.getElementById('year').value;
+                    const m = document.getElementById('month').value.padStart(2, '0');
+                    const d = document.getElementById('day').value.padStart(2, '0');
+                    const h = document.getElementById('hour').value.padStart(2, '0');
+                    const min = document.getElementById('minute').value.padStart(2, '0');
+
+                    document.getElementById('birth_date').value = `${y}-${m}-${d}`;
+                    document.getElementById('birth_time_full').value = `${h}:${min}`;
+
+                    document.getElementById('sajuForm').submit();
+                }
+
+                const gilsangMessages = {
+                    "01": { title: "맹호도 (기세)", desc: "쫄지 말고 당신만의 강렬한 기세로 상황을 밀어붙이세요. 액운을 물리치고 두려움 없이 앞으로 치고 나갈 때입니다." },
+                    "02": { title: "새벽 닭 (기상)", desc: "어둠을 깨고 새로운 아침이 밝았으니 지금 당장 일어나 움직이세요. 미라클 모닝을 실천하며 하루의 주도권을 선점해야 합니다." },
+                    "03": { title: "사냥매 (포착)", desc: "예리한 통찰력으로 상황을 지켜보다가 기회가 오면 단숨에 낚아채세요. 지금 망설이는 순간 천금 같은 기회는 날아갑니다." },
+                    "04": { title: "청룡 (비상)", desc: "당신을 위한 완벽한 판이 깔렸으니 주인공으로 당당하게 비상하세요. 최고의 권위와 자신감을 가지고 판을 주도해야 합니다." },
+                    "05": { title: "해치 (판별)", desc: "시비와 선악을 명확히 가려내고 아닌 것은 단호하게 아니라고 말하세요. 감정에 휘둘리지 말고 철저하게 팩트 체크를 해야 할 시점입니다." },
+                    "06": { title: "말 (질주)", desc: "지금은 뒤돌아보지 말고 오직 목표를 향해 전속력으로 달려가야 합니다. 압도적인 속도와 강인한 실행력으로 승부를 보시길 바랍니다." },
+                    "07": { title: "삽살개 (수호)", desc: "당신의 구역과 소중한 것들을 외부의 위협으로부터 확실히 지켜내세요. 주눅 들지 말고 맹렬하게 짖으며 용기 있게 목소리를 내야 합니다." },
+                    "08": { title: "매화 (선구)", desc: "추운 겨울을 이겨내고 가장 먼저 꽃을 피우는 선구자가 되세요. 남들보다 한발 앞서서 새로운 도전을 시작할 완벽한 타이밍입니다." },
+                    "09": { title: "까치 (소식)", desc: "곧 당신을 기쁘게 할 반가운 소식이 찾아올 것이니 기대하셔도 좋습니다. 이메일이나 연락처를 예의주시하며 기회를 맞이할 준비를 하세요." },
+                    "10": { title: "일월오봉도 (중심)", desc: "당신은 스스로의 삶을 다스리는 거대한 왕국의 통치자입니다. 중심을 단단히 잡고 내 삶의 통제권을 확실하게 거머쥐세요." },
+                    "11": { title: "등용문 (도약)", desc: "거센 물결을 거슬러 오르면 마침내 용으로 도약할 수 있습니다. 지금보다 한 단계 더 레벨 업을 하기 위해 과감하게 도전하세요." },
+                    "12": { title: "우직한 소 (뚝심)", desc: "얕은 요령을 피우기보다는 묵묵히 버티는 뚝심과 성실함이 필요합니다. 묵묵히 제자리를 지키며 일관성 있게 나아가면 결국 승리합니다." },
+                    "13": { title: "대나무 (소신)", desc: "어떠한 유혹이나 타협에도 당신의 굳은 소신을 굽히지 마세요. 곧고 바른 마음가짐을 유지하는 것이 지금의 돌파구입니다." },
+                    "14": { title: "책거리 (학습)", desc: "지금은 새로운 지식을 탐구하고 전문적인 학문에 집중해야 할 시기입니다. 아는 것이 곧 돈이자 힘이 되니 공부와 자기계발에 매진하세요." },
+                    "15": { title: "거북이 (전망)", desc: "조급하게 서두르기보다는 멀리 내다보는 장기적인 안목이 필요합니다. 급할수록 돌아가며 차분하고 길게 미래를 준비하세요." },
+                    "16": { title: "소나무 (불변)", desc: "비바람이 몰아쳐도 변치 않는 푸르름을 간직하며 멘탈을 지키세요. 뿌리 깊은 나무처럼 주변 상황에 흔들리지 말고 당신의 의리를 지켜내야 합니다." },
+                    "17": { title: "벌 (근면)", desc: "티끌 모아 태산이라는 마음으로 부지런히 움직이고 주변과 협동하세요. 성실하게 땀 흘린 만큼 달콤하고 확실한 결실을 얻게 될 것입니다." },
+                    "18": { title: "덩굴 (연결)", desc: "끊임없이 뻗어나가는 덩굴처럼 인적 네트워크를 적극적으로 확장하세요. 다른 사람들과 유기적으로 연결될수록 당신의 경쟁력은 더욱 강해집니다." },
+                    "19": { title: "파초 (재기)", desc: "잠시 실패나 좌절을 겪었더라도 결코 꺾이지 않고 다시 자라날 수 있습니다. 스스로를 치유하며 기사회생의 기회를 단단히 붙잡으세요." },
+                    "20": { title: "다람쥐 (비축)", desc: "다가올 미래의 겨울을 대비해 부지런히 자원과 식량을 비축해야 합니다. 소비를 줄이고 알뜰하게 저축하며 철저하게 대비책을 마련하세요." },
+                    "21": { title: "모란도 (부귀)", desc: "당신은 충분히 풍요를 누릴 자격이 있으니 마음껏 부귀영화를 뽐내세요. 자신을 위해 과감하게 투자하고 지금까지의 성과를 당당하게 플렉스(Flex) 하세요." },
+                    "22": { title: "석류 (성과)", desc: "그동안의 노력들이 알알이 맺혀 구체적이고 보석 같은 결과물로 나타납니다. 빈틈없이 꽉 찬 성과를 수확할 준비를 하고 성취감을 맛보세요." },
+                    "23": { title: "포도 (결실)", desc: "주렁주렁 열린 포도처럼 재물과 수익이 줄줄이 엮여 들어오게 됩니다. 수입 파이프라인을 다각화하여 당신의 결실을 극대화하세요." },
+                    "24": { title: "금붕어 (유통)", desc: "물이 자유롭게 흐르듯 돈의 흐름을 타면 현금 유통이 원활해집니다. 고인 물에 머물지 말고 재물의 순환을 활발하게 만들어 수익을 창출하세요." },
+                    "25": { title: "복주머니 (행운)", desc: "전혀 예상하지 못했던 뜻밖의 행운과 재물이 당신에게 굴러들어옵니다. 활짝 열린 마음으로 넝쿨째 굴러온 복을 움켜쥐고 감사히 누리세요." },
+                    "26": { title: "수박 (실속)", desc: "화려한 겉모습보다는 알찬 속내를 들여다보고 실속을 확실히 챙겨야 할 때입니다. 번창의 기운이 가득하니 내실을 단단히 다져 이익을 극대화하세요." },
+                    "27": { title: "맨드라미 (승진)", desc: "당신의 명예가 드높아지고 승진이나 합격의 기쁨을 누릴 수 있는 운기입니다. 관직에 오르듯 한 단계 높은 자리로 당당히 올라서서 인정받으세요." },
+                    "28": { title: "두꺼비 (단속)", desc: "지금은 새로운 공격적 투자보다는 당신이 가진 재물을 단단히 지켜내야 할 때입니다. 지갑을 꽉 닫고 불필요한 지출을 철저히 단속하세요." },
+                    "29": { title: "복숭아 (건강)", desc: "건강이 곧 최고의 재산이니 당신의 컨디션과 체력을 최우선으로 돌보세요. 충분한 휴식으로 몸과 마음의 생기를 되찾고 에너지를 충전하세요." },
+                    "30": { title: "곶감 (보상)", desc: "떫은 인내의 시간을 견뎌냈으니 이제 가장 달콤한 보상을 맛볼 차례입니다. 고생 끝에 찾아온 확실한 성과를 여유롭게 즐기세요." },
+                    "31": { title: "연화도 (정화)", desc: "진흙 속에서도 맑게 피어나는 연꽃처럼 탁한 기운을 정화하고 몸을 씻어내세요. 나쁜 감정과 인간관계는 걸러내고 당신만의 완벽한 디톡스 타임을 가지세요." },
+                    "32": { title: "원앙 (짝꿍)", desc: "모든 것을 혼자서만 해결하려 하지 말고 마음이 잘 맞는 파트너와 함께 하세요. 서로를 믿고 의지하며 협력할 때 상상 이상의 완벽한 시너지가 발생합니다." },
+                    "33": { title: "나비 (자유)", desc: "어깨에 짊어진 무거운 짐을 내려놓고 나비처럼 가볍고 자유롭게 삶을 즐기세요. 너무 심각해지지 말고 지금 이 순간의 긍정적인 바이브에 집중하세요." },
+                    "34": { title: "기러기 (약속)", desc: "공동체의 질서를 지키며 타인과의 신의와 약속을 가장 소중하게 여겨야 합니다. 변함없는 신뢰와 질서가 가장 튼튼한 인간관계를 만들어 줍니다." },
+                    "35": { title: "국화 (사색)", desc: "복잡하고 시끄러운 세상에서 한 걸음 물러나 혼자만의 고요한 사색의 시간을 가지세요. 타인과의 적당한 거리두기가 오히려 내면의 단단한 평화를 가져다줍니다." },
+                    "36": { title: "토끼 (지혜)", desc: "어려운 위기 앞에서도 당황하지 말고 재치 있는 지혜를 발휘해 요령 있게 빠져나가세요. 절구질을 하듯 꾸준하면서도 영리하게 상황을 주도해야 합니다." },
+                    "37": { title: "사슴 (품위)", desc: "어떠한 혼란스러운 상황에서도 당신만의 우아함과 고귀한 품위를 잃지 마세요. 본능적인 직관을 믿고 우아하고 부드럽게 대처하는 것이 정답입니다." },
+                    "38": { title: "부채 (환기)", desc: "꽉 막히고 답답한 상황이라면 시원한 바람을 일으켜 주변 공기를 확 환기시키세요. 액운을 멀리 날려버리고 새롭고 긍정적인 흐름을 만들어내야 합니다." },
+                    "39": { title: "고양이 (유연)", desc: "뻣뻣하게 고집을 부리기보다는 부드럽고 유연한 사고방식으로 대처해야 합니다. 호기심 어린 눈빛으로 주변을 관찰하며 상황에 맞게 처신하세요." },
+                    "40": { title: "산신령 (귀인)", desc: "당신을 든든하게 지켜주고 바른길로 이끌어 줄 귀인이 가까운 곳에 있습니다. 혼자서 끙끙 앓지 말고 존경하는 멘토나 선배에게 적극적으로 조언을 구하세요." }
+                };
+
+                function drawGilsangCard() {
+                    const randomNum = Math.floor(Math.random() * 40) + 1;
+                    const formattedNum = String(randomNum).padStart(2, '0');
+                    const cardImagePath = `/static/assets/images/gilsang_oracle/gilsang_${formattedNum}.webp`;
+
+                    const cardElement = document.getElementById('todayCard');
+                    const messageContainer = document.getElementById('cardMessageContainer');
+                    const titleElement = document.getElementById('cardTitle');
+                    const descElement = document.getElementById('cardDesc');
+
+                    // 애니메이션 효과 (카드가 뒤집히는 연출)
+                    cardElement.style.transform = 'scale(0.85) rotateY(90deg)';
+
+                    setTimeout(() => {
+                        cardElement.src = cardImagePath;
+                        cardElement.style.transform = 'scale(1) rotateY(0deg)';
+
+                        // 텍스트 업데이트
+                        const messageData = gilsangMessages[formattedNum] || { title: "알 수 없는 기운", desc: "신비로운 기운이 감돌고 있습니다." };
+                        titleElement.innerText = "🔮 " + messageData.title;
+                        descElement.innerText = messageData.desc;
+                        messageContainer.style.display = 'block';
+                    }, 250);
+
+                    console.log("오늘 뽑힌 길상 오라클 카드 번호:", formattedNum);
+                }
+            </script>
+        </div>
+        <script>
+            // [코다리] 브라우저(PWA) 강력한 캐시 때문에 UI 변경사항이 즉각 반영되지 않는 현상이 발생하여 임시 주석 처리합니다.
+            /*
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register("/sw.js")
+                        .then(reg => console.log('Service Worker Registered!', reg))
+                        .catch(err => console.log('Service Worker Registration Failed:', err));
+                });
+            }
+            */
+        </script>
+    </div>
+</body>
+
+</html>

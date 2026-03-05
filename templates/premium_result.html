@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOW글로우:갓생사주 - 명식 분석</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- PWA Setup -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Premium Dark Theme & Saju Styles -->
+        <style>
+            :root {
+                --bg-deep: #0f172a;
+                --glass-bg: rgba(10, 15, 30, 0.85);
+                /* Darker for better contrast */
+                --glass-border: rgba(255, 255, 255, 0.1);
+                --primary: #fbbf24;
+                --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                --text-main: #f8fafc;
+                --text-muted: #e2e8f0;
+                /* Brighter gray as requested */
+
+                --wood: #34d399;
+                --fire: #f87171;
+                --earth: #fbbf24;
+                --metal: #e2e8f0;
+                --water: #60a5fa;
+            }
+
+            body {
+                background-color: #0f172a;
+                /* Keep the user-requested lighter background */
+                background-image:
+                    radial-gradient(circle at 50% 0%, #312e81 0%, #0f172a 60%, #000000 100%),
+                    url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='stars' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(255,255,255,0.8)'/%3E%3Ccircle cx='50' cy='80' r='0.5' fill='rgba(255,255,255,0.6)'/%3E%3Ccircle cx='120' cy='40' r='0.8' fill='rgba(255,255,255,0.7)'/%3E%3Ccircle cx='180' cy='150' r='0.6' fill='rgba(255,255,255,0.5)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23stars)'/%3E%3C/svg%3E");
+                background-attachment: fixed;
+                color: var(--text-main);
+                font-family: 'Pretendard', sans-serif;
+                min-height: 100vh;
+                margin: 0;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem 1rem;
+                animation: fadeIn 1.2s ease-out;
+                /* Smooth Fade-in on load */
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .glass-card {
+                background: var(--glass-bg);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border);
+                border-radius: 24px;
+                padding: 2rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+                margin-bottom: 2rem;
+            }
+
+            .text-gradient {
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                font-weight: 700;
+                font-family: 'Noto Serif KR', serif;
+                /* Consistent font with Index */
+            }
+
+            h1 {
+                font-size: 1.6rem !important;
+                margin-bottom: 0.5rem;
+                text-align: center;
+            }
+
+            h3 {
+                color: var(--primary);
+                margin-top: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 0.8rem;
+                margin-bottom: 1.2rem;
+                font-size: 1.2rem;
+            }
+
+            h3 i {
+                margin-right: 0.5rem;
+            }
+
+            /* Revised Saju Table Styles */
+            .saju-table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: center;
+                color: var(--text-main);
+            }
+
+            .saju-table th {
+                padding: 1rem 0.5rem;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            .saju-table td {
+                padding: 1.2rem 0.5rem;
+                /* Revert to original padding for standard tables */
+                vertical-align: middle;
+                border: 1px solid rgba(255, 255, 255, 0.03);
+            }
+
+            /* Main Pillars Specific Styles (The one to fix for mobile) */
+            .main-pillars {
+                table-layout: fixed;
+                /* Only fix layout for the pillars table */
+            }
+
+            .main-pillars td {
+                height: 100px;
+                /* Fixed height ONLY for main pillars */
+                padding: 0.5rem 0.2rem;
+                /* Tighter padding for mobile alignment */
+            }
+
+            /* Category Column Style */
+            .col-category {
+                background: rgba(0, 0, 0, 0.2);
+                font-weight: 600;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+            }
+
+            /* Cell Content Logic */
+            .cell-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                height: 100%;
+            }
+
+            .hanja {
+                font-size: 1.8rem;
+                /* Slightly smaller for mobile safety */
+                font-weight: 700;
+                display: block;
+                line-height: 1.2;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .hanja-sub {
+                display: block;
+                font-size: 0.9rem;
+                opacity: 0.8;
+                font-weight: 400;
+                margin-top: -2px;
+            }
+
+            .ten-god-label {
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                margin-bottom: 4px;
+                white-space: nowrap;
+            }
+
+            .me-cell {
+                background: rgba(251, 191, 36, 0.15);
+                box-shadow: inset 0 0 15px rgba(251, 191, 36, 0.1);
+                position: relative;
+            }
+
+            .me-cell::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border: 2px solid rgba(251, 191, 36, 0.3);
+                border-radius: 12px;
+                pointer-events: none;
+            }
+
+            /* Element Colors */
+            .wood {
+                color: var(--wood);
+            }
+
+            .fire {
+                color: var(--fire);
+            }
+
+            .earth {
+                color: var(--earth);
+            }
+
+            .metal {
+                color: #f1f5f9;
+                /* Even brighter (white-ish) for max visibility */
+            }
+
+            .water {
+                color: var(--water);
+            }
+
+            /* Luck Tables */
+            .luck-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .table-scroll {
+                max-height: 400px;
+                overflow-y: auto;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+            }
+
+            .interactive-table th {
+                position: sticky;
+                top: 0;
+                background: #0f172a;
+                z-index: 10;
+            }
+
+            .interactive-table tbody tr {
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+            .interactive-table tbody tr:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .interactive-table tbody tr.selected {
+                background: rgba(251, 191, 36, 0.15);
+                border-left: 3px solid var(--primary);
+            }
+
+            .interactive-table td {
+                font-size: 1.1rem;
+                /* Increased font size for legibility */
+            }
+
+            .interactive-table td small {
+                font-size: 0.9rem;
+            }
+
+            .btn-primary {
+                display: inline-block;
+                padding: 1rem 2.5rem;
+                border-radius: 16px;
+                background: var(--primary-gradient);
+                color: #451a03;
+                font-weight: 700;
+                text-decoration: none;
+                transition: all 0.3s;
+                box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+                width: 70%;
+                /* Reduced width */
+                max-width: 300px;
+                /* Max width constraint */
+                margin: 0 auto;
+                /* Center alignment */
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(217, 119, 6, 0.5);
+            }
+
+            .btn-tarot {
+                display: inline-block;
+                padding: 1rem 2.5rem;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+                /* Emerald Gradient */
+                color: #ffffff;
+                font-weight: 700;
+                text-decoration: none;
+                transition: all 0.3s;
+                box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
+                width: 70%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .btn-tarot:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(52, 211, 153, 0.5);
+            }
+
+            .btn-premium {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                padding: 1.2rem 2.5rem;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+                color: #451a03;
+                font-weight: 800;
+                font-size: 1.1rem;
+                text-decoration: none;
+                transition: all 0.3s;
+                box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
+                width: 100%;
+                border: none;
+                cursor: pointer;
+            }
+
+            .btn-premium:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 30px rgba(255, 140, 0, 0.6);
+            }
+        </style>
+
+        <!-- Header -->
+        <header style="text-align: center; margin-bottom: 3rem;">
+            <h1 class="text-gradient">GLOW글로우:갓생사주</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0.8rem;">운명을 읽고 나를 켜다</p>
+            <p style="color: var(--text-main); font-weight: 500; opacity: 0.9;">{{ birth_dt }} <span
+                    style="margin: 0 0.5rem; color: rgba(255,255,255,0.2);">|</span> {{ name }}님의 사주 명식</p>
+
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; display: inline-block;">
+                <p style="color: #FFD700; margin: 0; font-size: 0.95rem;">
+                    오늘의 운세와 사주원국표는 무료로 제공 됩니다.
+                </p>
+            </div>
+        </header>
+
+        <!-- PREMIUM AI SECTION -->
+        {% if interp.premium_ai %}
+        <!-- 0. Premium Banner -->
+        <div class="glass-card"
+            style="border: 1px solid #FFD700; background: rgba(255, 215, 0, 0.05); text-align: center; padding: 3rem 2rem;">
+            <i class="fa-solid fa-crown"
+                style="font-size: 3rem; color: #FFD700; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);"></i>
+            <h2 class="text-gradient" style="font-size: 2rem; margin-bottom: 1rem;">당신을 위한 다정한 우주의 기록</h2>
+            <p style="color: var(--text-main); font-size: 1.1rem; opacity: 0.9; line-height: 1.6;">OOO 님, 세상에 단 하나뿐인 당신의
+                고유한 빛을 찾아 이 기록을 전합니다.</p>
+        </div>
+
+        <!-- [Page 1] 세상에 태어난 아름다운 이유 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-seedling"></i> 1. 세상에 태어난 아름다운 이유 (나의 본질)</h3>
+            {% if 'opt_full' in purchased_items or 'opt_basic' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.reason_to_live
+                }}</p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">당신이 태어난 이유는 우주가 당신에게 부여한 특별한 사명입니다. 갓생을 살기 위한 가장 중요한
+                    뼈대이며 어쩌고 저쩌고...</p>
+                <p style="line-height: 1.8; font-size: 1.05rem;">따라서 당신은 이런 방향으로 나아가야 하며 저렇게 살면 복이 옵니다.</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'총 운세' 옵션 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 2] 나를 움직이는 에너지와 숨겨진 매력 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-fire"></i> 2. 나를 움직이는 에너지와 숨겨진 매력</h3>
+            {% if 'opt_full' in purchased_items or 'opt_basic' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.energy_charm }}
+            </p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">당신 내면에 숨겨진 강력한 에너지가 있습니다. 다른 사람들은 모르는 당신만의 특별한 매력 포인트는
+                    바로...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'총 운세' 옵션 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 3] 마음의 빈자리 다독이기 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-hand-holding-heart"></i> 3. 마음의 빈자리 다독이기 (결핍의 이해)</h3>
+            {% if 'opt_full' in purchased_items or 'opt_basic' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.mind_healing }}
+            </p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">인생에서 당신이 유독 부족하다고 느끼는 영역은 사주에 이렇게 나타납니다. 하지만 이를 극복하는
+                    방법은...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'총 운세' 옵션 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 4] 나만의 다정한 수호천사 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> 4. 나만의 다정한 수호천사 (행운의 치트키)</h3>
+            {% if 'opt_full' in purchased_items or 'opt_basic' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.lucky_action }}
+            </p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">당신을 지켜주는 확실한 수호천사 같은 에너지는 바로 이것입니다. 이 기운을 활성화하기 위해서는
+                    평소에...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'총 운세' 옵션 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 5] 인생의 큰 파도 타기 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-water"></i> 5. 인생의 큰 파도 타기 (나의 10년 대운)</h3>
+            {% if 'opt_full' in purchased_items or 'opt_basic' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.daewoon_wave }}
+            </p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">현재 10년 대운의 큰 흐름은 당신을 이런 방향으로 이끌고 있습니다. 운의 파도를 잘 타기 위한
+                    가장 좋은 전략은...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'총 운세' 옵션 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 6] 갓생을 위한 재물 & 커리어 로드맵 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-coins"></i> 6. 갓생을 위한 재물 & 커리어 로드맵</h3>
+            {% if 'opt_full' in purchased_items or 'opt_wealth' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.wealth_roadmap
+                }}</p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">당신의 타고난 재물 그릇은 매우 특별합니다. 이 시기에는 이런 곳에 투자해야 큰 돈을 벌 수 있으며
+                    직장에서는...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'재물운' 혹은 '풀패키지' 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 7] 나를 빛나게 하는 소중한 인연들 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-user-group"></i> 7. 나를 빛나게 하는 소중한 인연들</h3>
+            {% if 'opt_full' in purchased_items or 'opt_love' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{ interp.premium_ai.love_mate }}
+            </p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">당신과 가장 잘 맞는 인연은 이런 특징을 가지고 있습니다. 올해 연애운의 강한 시기는 바로 이
+                    달이며...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'연애운' 혹은 '풀패키지' 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 8] 올해 당신에게 찾아올 빛나는 기회 -->
+        <div class="glass-card" style="position: relative; overflow: hidden;">
+            <h3><i class="fa-solid fa-calendar-check"></i> 8. 2026년, 당신에게 찾아올 빛나는 기회</h3>
+            {% if 'opt_full' in purchased_items or 'opt_year' in purchased_items %}
+            <p style="white-space: pre-line; line-height: 1.8; font-size: 1.05rem;">{{
+                interp.premium_ai.this_year_chance }}</p>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <p style="line-height: 1.8; font-size: 1.05rem;">올 한 해 가장 큰 행운이 들어오는 시기는 하반기입니다. 이 기회를 잡으려면 반드시 이런
+                    준비가...</p>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'올해의 운세' 혹은 '풀패키지' 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- [Page 9] Bonus. 당신만을 위한 우주의 응원 카드 -->
+        <div class="glass-card" style="position: relative; overflow: hidden; text-align: center;">
+            <h3><i class="fa-solid fa-star"></i> Bonus. 당신만을 위한 우주의 응원 카드</h3>
+            {% if 'opt_full' in purchased_items or 'opt_basic' in purchased_items %}
+            <div style="margin: 2rem 0;">
+                <img src="{{ url_for('static', filename='images/card_' + oracle_number + '.png') }}" alt="오라클 카드"
+                    style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); width: 300px;">
+            </div>
+            <div
+                style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(251, 191, 36, 0.3); text-align: left;">
+                <i class="fa-solid fa-quote-left"
+                    style="font-size: 1.5rem; opacity: 0.3; color: #fbbf24; margin-bottom: 1rem; display: block;"></i>
+                <p style="white-space: pre-line; line-height: 1.8; font-size: 1.1rem; color: #f8fafc; margin: 0;">{{
+                    interp.premium_ai.oracle_message }}</p>
+            </div>
+            {% else %}
+            <div style="filter: blur(8px); opacity: 0.5; user-select: none;">
+                <div
+                    style="margin: 2rem 0; width: 300px; height: 420px; background: rgba(255,255,255,0.1); border-radius: 12px; display: inline-block;">
+                </div>
+                <div
+                    style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(251, 191, 36, 0.3); text-align: left;">
+                    <p style="line-height: 1.8; font-size: 1.1rem; color: #f8fafc; margin: 0;">우주는 당신을 향해 무한한 응원의 메시지를
+                        보내고 있습니다. 카드가 말해주는 당신의 길은...</p>
+                </div>
+            </div>
+            <div
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                <i class="fa-solid fa-lock"
+                    style="font-size: 2.5rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;"></i>
+                <p style="color: #fff; font-weight: bold; font-size: 1.1rem;">'총 운세' 혹은 '풀패키지' 구매 시 확인 가능합니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% elif not interp.premium_ai %}
+        <!-- AI 데이터 에러 -->
+        <div class="glass-card"
+            style="border: 1px solid #f87171; background: rgba(248, 113, 113, 0.05); text-align: center;">
+            <i class="fa-solid fa-triangle-exclamation"
+                style="font-size: 2rem; color: #f87171; margin-bottom: 1rem;"></i>
+            <h3 style="color: #f87171; border: none; margin-bottom: 0.5rem;">AI 분석 로딩 지연</h3>
+            <p style="color: var(--text-main); font-size: 1rem; opacity: 0.9;">데이터를 가져오는데 문제가 발생했습니다. 관리자에게 문의해주세요.</p>
+        </div>
+        {% endif %}
+
+        <!-- Footer Actions -->
+        <div
+            style="text-align: center; margin-top: 3rem; margin-bottom: 5rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+
+            <a href="/" class="btn-primary">
+                <i class="fa-solid fa-rotate-right"></i> 다시 입력하기
+            </a>
+            <a href="https://godsaeng-tarot-web.vercel.app/" class="btn-tarot" target="_blank">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 갓생타로 보러가기
+            </a>
+        </div>
+    </div>
+
+</body>
+
+</html>
