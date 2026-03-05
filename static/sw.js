@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glow-saju-v5';
+const CACHE_NAME = 'glow-saju-v6';
 const ASSETS = [
     '/',
     '/static/style.css',

@@ -135,9 +135,11 @@ class AIAnalysis:
             return {}
 
     def _ensure_model(self):
-        """API 키를 다시 확인하고 모델이 없으면 초기화합니다."""
-        if not self.api_key:
-            self.api_key = os.getenv("GEMINI_API_KEY")
+        """모델이 없으면 초기화합니다."""
+        if not self.free_model:
+            if not self.api_key:
+                self.api_key = os.getenv("GEMINI_API_KEY")
+            
             if self.api_key:
                 genai.configure(api_key=self.api_key)
                 
