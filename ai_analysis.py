@@ -210,10 +210,11 @@ class AIAnalysis:
             )
             return json.loads(response.text)
         except Exception as e:
-            print(f"Android Free AI 분석 오류: {e}")
+            error_msg = str(e)
+            print(f"Android Free AI 분석 오류: {error_msg}")
             return {
-                "reason_to_live": f"{name}님의 사주 기운이 너무 강하여 AI가 잠시 숨을 고르고 있습니다. 잠시 후 다시 시도해 주세요!",
-                "energy_charm": "우주의 기운을 불러오는 중입니다. 곧 결과를 확인하실 수 있습니다."
+                "reason_to_live": f"AI 분석 중 오류가 발생했습니다: {error_msg[:100]}...",
+                "energy_charm": "시스템 로그를 확인해 주세요. (관리자 문의 필요)"
             }
 
     def get_today_fortune(self, name, day_stem, pillars, ohaeng):
@@ -241,11 +242,11 @@ class AIAnalysis:
 
 JSON 형식:
 {{
-  "one_line": "오늘을 한 문장으로 요약 (예: 배숙빈님, 오늘은 귀인을 만나는 날이에요)",
-  "keyword": "오늘의 핵심 키워드 1개 (예: 성장, 휴식, 만남)",
-  "good_point": "오늘 일어날 좋은 일이나 행운 요소 (1~2문장)",
-  "bad_point": "오늘 주의해야 할 점이나 마음가짐 (1~2문장)",
-  "advice": "오늘의 실천형 조언 (따뜻하고 다정한 에세이 느낌, 2~3문장)"
+  "one_line": "오늘을 한 문장으로 요약",
+  "keyword": "키워드",
+  "good_point": "행운",
+  "bad_point": "주의",
+  "advice": "조언"
 }}
 """
         try:
@@ -258,11 +259,12 @@ JSON 형식:
             )
             return json.loads(response.text)
         except Exception as e:
-            print(f"Today Fortune AI 분석 오류: {e}")
+            error_msg = str(e)
+            print(f"Today Fortune AI 분석 오류: {error_msg}")
             return {
-                "one_line": f"{name}님, 오늘의 운세 채널을 맞추는 중입니다!",
-                "keyword": "대기",
-                "good_point": "잠시 후면 더 정확한 오늘의 행운을 보실 수 있어요.",
-                "bad_point": "데이터 수신이 지연되고 있으니 조금만 기다려 주세요.",
-                "advice": "따뜻한 차 한 잔 마시며 운명을 기다려보는 건 어떨까요?"
+                "one_line": f"오늘의 운세 로드 실패: {error_msg[:50]}",
+                "keyword": "에러",
+                "good_point": "데이터 연동 중 문제가 발생했습니다.",
+                "bad_point": "잠시 후 다시 시도해 주세요.",
+                "advice": f"상세 에러: {error_msg}"
             }
