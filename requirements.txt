@@ -6,4 +6,4 @@ python-dotenv
 requests
 numpy
 korean_lunar_calendar
-google-generativeai
+google-generativeai>=0.8.3

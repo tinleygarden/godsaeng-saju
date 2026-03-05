@@ -142,8 +142,34 @@ class AIAnalysis:
             self.api_key = os.getenv("GEMINI_API_KEY")
             if self.api_key:
                 genai.configure(api_key=self.api_key)
-                self.free_model = genai.GenerativeModel("gemini-1.5-flash")
-                self.premium_model = genai.GenerativeModel("gemini-1.5-pro")
+                
+                # Try Flash first (as requested by user)
+                flash_models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-pro-1.5-flash", "gemini-2.0-flash-exp"]
+                self.free_model = None
+                for m_name in flash_models:
+                    try:
+                        model = genai.GenerativeModel(m_name)
+                        # Test if model is actually available
+                        model.generate_content("test", generation_config=genai.GenerationConfig(max_output_tokens=1))
+                        self.free_model = model
+                        print(f"Using Flash model: {m_name}")
+                        break
+                    except Exception:
+                        continue
+                
+                if not self.free_model:
+                    # Fallback to Pro if Flash is absolutely not available
+                    try:
+                        self.free_model = genai.GenerativeModel("gemini-pro")
+                    except:
+                        self.free_model = None
+
+                # Premium Model
+                try:
+                    self.premium_model = genai.GenerativeModel("gemini-1.5-pro")
+                except:
+                    self.premium_model = self.free_model
+                    
         return self.free_model is not None
 
     def get_android_free_analysis(self, name, gender, pillars, ohaeng, ten_stars_list, current_daewun, birth_context, oracle_number):
