@@ -144,7 +144,7 @@ class AIAnalysis:
                 genai.configure(api_key=self.api_key)
                 
                 # Try Flash first (as requested by user)
-                flash_models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-pro-1.5-flash", "gemini-2.0-flash-exp"]
+                flash_models = ["gemini-3-flash", "gemini-3.1-flash-lite", "gemini-2.5-flash", "gemini-1.5-flash-latest"]
                 self.free_model = None
                 for m_name in flash_models:
                     try:
