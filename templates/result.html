@@ -95,28 +95,6 @@
                 margin-right: 0.5rem;
             }
 
-            /* AI Loader Animation */
-            .ai-loader {
-                width: 24px;
-                height: 24px;
-                border: 3px solid rgba(255, 255, 255, 0.1);
-                border-top: 3px solid var(--primary);
-                border-radius: 50%;
-                animation: ai-spin 1s linear infinite;
-                margin-right: 12px;
-                display: inline-block;
-            }
-
-            @keyframes ai-spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
             /* Revised Saju Table Styles */
             .saju-table {
                 width: 100%;
@@ -574,9 +552,10 @@
 
 
         <!-- ===================================== -->
-        <!-- 갓생사주 프리미엄 분석 (비동기 로딩) -->
+        <!-- 갓생사주 프리미엄 체험판 (안드로이드 전용) -->
         <!-- ===================================== -->
-        <div style="margin-top: 4rem;" id="premium-ai-section">
+        {% if interp.premium_ai %}
+        <div style="margin-top: 4rem;">
             <h2
                 style="text-align: center; color: var(--primary); font-size: 1.8rem; margin-bottom: 2.5rem; font-family: 'Noto Serif KR', serif;">
                 ✨ 갓생사주 스페셜 분석
@@ -590,10 +569,9 @@
                     핵심 속성</div>
                 <h3 style="color: var(--primary); font-size: 1.3rem; margin-bottom: 1.5rem; border-bottom: none;"><i
                         class="fa-solid fa-seedling"></i> 나의 본질과 타고난 무기</h3>
-                <div id="premium-ai-essence"
-                    style="color: var(--text-main); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center;">
-                    <div class="ai-loader"></div> 분석 중...
-                </div>
+                <div
+                    style="color: var(--text-main); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 12px;">
+                    {{ interp.premium_ai.reason_to_live }}</div>
             </div>
 
             <!-- 2. 나를 움직이는 에너지 -->
@@ -601,10 +579,9 @@
                 style="margin-bottom: 2rem; border-top: 4px solid #f43f5e; position: relative; overflow: hidden;">
                 <h3 style="color: #f43f5e; font-size: 1.3rem; margin-bottom: 1.5rem; border-bottom: none;"><i
                         class="fa-solid fa-fire-flame-curved"></i> 나를 움직이는 에너지와 숨겨진 매력</h3>
-                <div id="premium-ai-energy"
-                    style="color: var(--text-main); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center;">
-                    <div class="ai-loader"></div> 분석 중...
-                </div>
+                <div
+                    style="color: var(--text-main); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 12px;">
+                    {{ interp.premium_ai.energy_charm }}</div>
             </div>
 
             <!-- Premium Outlink Banner -->
@@ -621,29 +598,14 @@
                     style="color: var(--text-main); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem; opacity: 0.9;">
                     연애운, 재물운, 그리고 10년의 대운 흐름까지.<br>당신의 더 깊은 숨겨진 운명표찰은 글로우 갓생촌에 준비되어 있습니다.
                 </p>
-                <a href="https://godsaeng-village.com" class="glow-button" style="text-decoration: none;">앱 다운로드하고 전체 분석
-                    보기 <i class="fa-solid fa-chevron-right" style="margin-left: 10px;"></i></a>
+                <a href="https://godsaeng.world" target="_blank" class="btn-primary"
+                    style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color: white; box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4);">
+                    글로우 갓생촌에서 전체 운세 보기 <i class="fa-solid fa-arrow-up-right-from-square"
+                        style="margin-left: 0.5rem;"></i>
+                </a>
             </div>
         </div>
-
-        <!-- ===================================== -->
-        <!-- 오늘의 운세 & 행운 필터 (비동기 로딩) -->
-        <!-- ===================================== -->
-        <div style="margin-top: 1rem; margin-bottom: 5rem;" id="today-fortune-section">
-            <h2
-                style="text-align: center; color: #fbbf24; font-size: 1.8rem; margin-bottom: 2.5rem; font-family: 'Noto Serif KR', serif;">
-                🌞 오늘의 운세 & 행운 시그널
-            </h2>
-
-            <div class="glass-card"
-                style="border-top: 4px solid #fbbf24; margin-bottom: 2rem; background: rgba(251, 191, 36, 0.05);">
-                <div id="today-fortune-text"
-                    style="color: var(--text-main); line-height: 1.8; font-size: 1.1rem; padding: 1rem; min-height: 150px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                    <div class="ai-loader" style="border-top-color: #fbbf24;"></div>
-                    <p style="margin-top: 1rem; opacity: 0.7;">오늘의 우주 기운을 읽어오는 중...</p>
-                </div>
-            </div>
-        </div>
+        {% endif %}
         <!-- Footer Actions -->
         <div style="margin-top: 3rem; margin-bottom: 5rem; padding: 0 1rem;">
             <a href="/" class="btn-primary">
@@ -760,72 +722,15 @@
             });
         }
 
-        // (Ver 1.1.0) Async AI Loading Logic
-        const aiMetadata = {
-            name: {{ name | tojson }},
-        gender: { { gender | tojson } },
-        pillars: { { pillars | tojson } },
-        ohaeng: { { ohaeng | tojson } },
-        ten_stars_list: { { ten_stars_list | tojson } },
-        current_daewun: { { current_daewun | tojson } },
-        birth_context: { { birth_context | tojson } },
-        oracle_number: { { oracle_number | tojson } },
-        day_stem: { { pillars['day']['gan'] | tojson } }
-        };
-
-        async function loadPremiumAI() {
-            try {
-                const response = await fetch('/api/ai/premium', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(aiMetadata)
-                });
-                const data = await response.json();
-                if (data && !data.error) {
-                    document.getElementById('premium-ai-essence').innerText = data.reason_to_live || '';
-                    document.getElementById('premium-ai-energy').innerText = data.energy_charm || '';
-                } else {
-                    document.getElementById('premium-ai-essence').innerText = '분석을 불러오지 못했습니다.';
-                    document.getElementById('premium-ai-energy').innerText = '분석을 불러오지 못했습니다.';
-                }
-            } catch (e) {
-                console.error('Premium AI Load Error:', e);
-            }
-        }
-
-        async function loadTodayFortune() {
-            try {
-                const response = await fetch('/api/ai/fortune', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(aiMetadata)
-                });
-                const data = await response.json();
-                if (data && !data.error) {
-                    document.getElementById('today-fortune-text').innerHTML = data.summary || '운세 정보를 찾을 수 없습니다.';
-                } else {
-                    document.getElementById('today-fortune-text').innerText = '오늘의 운세를 불러오지 못했습니다.';
-                }
-            } catch (e) {
-                console.error('Fortune AI Load Error:', e);
-            }
-        }
-
         // Init on load
         if (daewoonData && daewoonData.length > 0) {
             renderDaewoon();
         }
-
-        // Start Async AI calls after page is ready
-        window.addEventListener('DOMContentLoaded', () => {
-            loadPremiumAI();
-            loadTodayFortune();
-        });
     </script>
     <!-- Version Info for Debugging -->
     <div
         style="text-align: center; padding: 2rem; opacity: 0.6; font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 5px;">
-        <span>Ver 1.1.0 | Async Turbo Sync Enabled</span>
+        <span>Ver 1.0.9 | Final Sync Enabled</span>
         <span
             style="display: inline-block; width: 6px; height: 6px; background-color: #4CAF50; border-radius: 50%; box-shadow: 0 0 5px #4CAF50;"></span>
     </div>

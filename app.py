@@ -110,12 +110,37 @@ def result():
         import random
         oracle_number = f"{random.randint(1, 40):02d}"
 
-        # AI 분석은 이제 비동기로 처리되므로 메인 로직에서 제거 (504 타임아웃 방지)
-        interpretations['premium_ai'] = None
-        interpretations['today_fortune'] = None
+        # AI 분석 호출 병렬화 (Vercel 10초 타임아웃 방지)
+        from concurrent.futures import ThreadPoolExecutor
+        
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            # 나의 본질/매력 분석 작업 제출
+            future_ai_data = executor.submit(
+                ai.get_android_free_analysis,
+                name, gender, pillars, ohaeng, ten_stars_list, current_daewun, birth_context, oracle_number
+            )
+            
+            # 오늘의 운세 분석 작업 제출
+            day_stem = pillars['day']['gan']
+            future_today_fortune = executor.submit(
+                ai.get_today_fortune, 
+                name, day_stem, pillars, ohaeng
+            )
+            
+            # 결과 대기 (최대 8초 내외로 완료되도록 유도)
+            ai_data = future_ai_data.result()
+            today_fortune = future_today_fortune.result()
+
+        if ai_data:
+            interpretations['premium_ai'] = ai_data
+            
+        if today_fortune:
+            interpretations['today_fortune'] = today_fortune
 
         now = datetime.now()
         current_date = now.strftime("%Y년 %m월 %d일")
+        # (무인(earth/wood)일 / 비견) 형태의 일진 정보 추가 (간단히 표시)
+        # 실제 일진 계산은 복잡하므로 간단한 날짜 정보만 우선 제공
         weekday_map = ['월', '화', '수', '목', '금', '토', '일']
         current_date += f" ({weekday_map[now.weekday()]}요일)"
 
@@ -129,48 +154,20 @@ def result():
             '술': '戌', '해': '亥'
         }
 
-        # AI 호출에 필요한 추가 필드들을 템플릿에 전달
+        # PRG를 통해 GET 요청으로만 접근되며, 새로고침해도 양식 다시 제출 경고가 발생하지 않음
         return render_template('result.html', 
                                name=name, 
-                               gender=gender,
                                pillars=pillars, 
                                ohaeng=ohaeng, 
                                interp=interpretations,
                                birth_dt=birth_dt,
                                hanja_map=hanja_map,
                                oracle_number=oracle_number,
-                               current_date=current_date,
-                               ten_stars_list=ten_stars_list,
-                               current_daewun=current_daewun,
-                               birth_context=birth_context)
+                               current_date=current_date)
     except Exception as e:
         import traceback
         traceback.print_exc()
         return f"Error occurred: {str(e)}", 400
-
-@app.route('/api/ai/premium', methods=['POST'])
-def api_premium_ai():
-    try:
-        data = request.json
-        res = ai.get_android_free_analysis(
-            data['name'], data['gender'], data['pillars'], 
-            data['ohaeng'], data['ten_stars_list'], 
-            data['current_daewun'], data['birth_context'], data['oracle_number']
-        )
-        return jsonify(res)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/ai/fortune', methods=['POST'])
-def api_today_fortune():
-    try:
-        data = request.json
-        res = ai.get_today_fortune(
-            data['name'], data['day_stem'], data['pillars'], data['ohaeng']
-        )
-        return jsonify(res)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
