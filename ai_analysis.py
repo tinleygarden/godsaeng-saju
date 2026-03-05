@@ -8,13 +8,11 @@ load_dotenv()
 class AIAnalysis:
     def __init__(self):
         self.api_key = os.getenv("GEMINI_API_KEY")
+        self.free_model = None
+        self.premium_model = None
         if self.api_key:
             genai.configure(api_key=self.api_key)
-            self.free_model = genai.GenerativeModel("gemini-1.5-flash")
-            self.premium_model = genai.GenerativeModel("gemini-1.5-pro")
-        else:
-            self.free_model = None
-            self.premium_model = None
+            # Initial setup will be handled by _ensure_model() on first call
         self.knowledge_dir = "saju_knowledge"
 
     def _load_knowledge_base(self):
