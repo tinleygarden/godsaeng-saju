@@ -10,8 +10,8 @@ class AIAnalysis:
         self.api_key = os.getenv("GEMINI_API_KEY")
         if self.api_key:
             genai.configure(api_key=self.api_key)
-            self.free_model = genai.GenerativeModel("gemini-2.5-flash")
-            self.premium_model = genai.GenerativeModel("gemini-2.5-pro")
+            self.free_model = genai.GenerativeModel("gemini-1.5-flash")
+            self.premium_model = genai.GenerativeModel("gemini-1.5-pro")
         else:
             self.free_model = None
             self.premium_model = None
