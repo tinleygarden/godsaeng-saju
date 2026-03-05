@@ -110,17 +110,30 @@ def result():
         import random
         oracle_number = f"{random.randint(1, 40):02d}"
 
-        # 안드로이드 무료앱용 심층 AI 분석 (나의 본질, 매력 2가지만 추출 - Flash 모델 사용)
-        ai_data = ai.get_android_free_analysis(
-            name, gender, pillars, ohaeng, ten_stars_list, current_daewun, birth_context, oracle_number
-        )
+        # AI 분석 호출 병렬화 (Vercel 10초 타임아웃 방지)
+        from concurrent.futures import ThreadPoolExecutor
         
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            # 나의 본질/매력 분석 작업 제출
+            future_ai_data = executor.submit(
+                ai.get_android_free_analysis,
+                name, gender, pillars, ohaeng, ten_stars_list, current_daewun, birth_context, oracle_number
+            )
+            
+            # 오늘의 운세 분석 작업 제출
+            day_stem = pillars['day']['gan']
+            future_today_fortune = executor.submit(
+                ai.get_today_fortune, 
+                name, day_stem, pillars, ohaeng
+            )
+            
+            # 결과 대기 (최대 8초 내외로 완료되도록 유도)
+            ai_data = future_ai_data.result()
+            today_fortune = future_today_fortune.result()
+
         if ai_data:
             interpretations['premium_ai'] = ai_data
-
-        # 오늘의 운세 분석 추가
-        day_stem = pillars['day']['gan']
-        today_fortune = ai.get_today_fortune(name, day_stem, pillars, ohaeng)
+            
         if today_fortune:
             interpretations['today_fortune'] = today_fortune
 
