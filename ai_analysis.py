@@ -134,8 +134,10 @@ class AIAnalysis:
             print(f"Premium AI 분석 오류: {e}")
             return {}
 
+    _working_model_name = None  # 성공한 모델명 캐싱용
+
     def _ensure_model(self):
-        """모델이 없으면 초기화합니다."""
+        """모델이 없으면 초기화합니다. 성공한 모델명을 캐싱하여 속도를 개선합니다."""
         if not self.free_model:
             if not self.api_key:
                 self.api_key = os.getenv("GEMINI_API_KEY")
@@ -143,19 +145,28 @@ class AIAnalysis:
             if self.api_key:
                 genai.configure(api_key=self.api_key)
                 
-                # Try Flash first (as requested by user)
-                flash_models = ["gemini-3-flash", "gemini-3.1-flash-lite", "gemini-2.5-flash", "gemini-1.5-flash-latest"]
-                self.free_model = None
-                for m_name in flash_models:
+                # 캐싱된 모델명이 있으면 우선 시도
+                if SajuAIAnalysis._working_model_name:
                     try:
-                        model = genai.GenerativeModel(m_name)
-                        # Test if model is actually available
-                        model.generate_content("test", generation_config=genai.GenerationConfig(max_output_tokens=1))
-                        self.free_model = model
-                        print(f"Using Flash model: {m_name}")
-                        break
-                    except Exception:
-                        continue
+                        self.free_model = genai.GenerativeModel(SajuAIAnalysis._working_model_name)
+                        print(f"Using cached model: {SajuAIAnalysis._working_model_name}")
+                    except:
+                        SajuAIAnalysis._working_model_name = None
+
+                if not self.free_model:
+                    # Flash 모델 순차 확인 (속도 최적화를 위해 목록 축소)
+                    flash_models = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"]
+                    for m_name in flash_models:
+                        try:
+                            model = genai.GenerativeModel(m_name)
+                            # 최소 토큰으로 테스트 호출 (가용성 확인)
+                            model.generate_content("ok", generation_config=genai.GenerationConfig(max_output_tokens=1))
+                            self.free_model = model
+                            SajuAIAnalysis._working_model_name = m_name
+                            print(f"Successfully initialized and cached: {m_name}")
+                            break
+                        except Exception:
+                            continue
                 
                 if not self.free_model:
                     # Fallback to Pro if Flash is absolutely not available
