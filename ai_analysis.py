@@ -146,12 +146,12 @@ class AIAnalysis:
                 genai.configure(api_key=self.api_key)
                 
                 # 캐싱된 모델명이 있으면 우선 시도
-                if SajuAIAnalysis._working_model_name:
+                if self.__class__._working_model_name:
                     try:
-                        self.free_model = genai.GenerativeModel(SajuAIAnalysis._working_model_name)
-                        print(f"Using cached model: {SajuAIAnalysis._working_model_name}")
+                        self.free_model = genai.GenerativeModel(self.__class__._working_model_name)
+                        print(f"Using cached model: {self.__class__._working_model_name}")
                     except:
-                        SajuAIAnalysis._working_model_name = None
+                        self.__class__._working_model_name = None
 
                 if not self.free_model:
                     # Flash 모델 순차 확인 (속도 최적화를 위해 목록 축소)
@@ -162,7 +162,7 @@ class AIAnalysis:
                             # 최소 토큰으로 테스트 호출 (가용성 확인)
                             model.generate_content("ok", generation_config=genai.GenerationConfig(max_output_tokens=1))
                             self.free_model = model
-                            SajuAIAnalysis._working_model_name = m_name
+                            self.__class__._working_model_name = m_name
                             print(f"Successfully initialized and cached: {m_name}")
                             break
                         except Exception:
