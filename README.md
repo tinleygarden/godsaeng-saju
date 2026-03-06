@@ -10,7 +10,7 @@
 
 ## 📖 소개
 
-**GLOW글로우:갓생사주**는 전통 명리학의 깊이 있는 분석과 현대적인 AI 기술(GPT-4o)을 결합한 차세대 사주 분석 웹 서비스입니다. 당신의 타고난 기운을 정교하게 계산하고, 갓생을 향한 운명의 지도를 프리미엄 다크 테마 디자인과 함께 제공합니다.
+**GLOW글로우:갓생사주**는 전통 명리학의 깊이 있는 분석과 현대적인 AI 기술(**Google Gemini**)을 결합한 차세대 사주 분석 웹 서비스입니다. 당신의 타고난 기운을 정교하게 계산하고, 갓생을 향한 운명의 지도를 프리미엄 다크 테마 디자인과 함께 제공합니다.
 
 ---
 
@@ -21,7 +21,7 @@
 - **십성(십신) 판정**: 사주 8개 글자 간의 관계(비견, 겁재, 식신 등) 심층 분석
 - **대운 흐름 분석**: 10년 주기 대운 흐름 및 인생의 주요 변곡점 가이드
 - **근묘화실(根苗花實)**: 생애 4단계(초년, 청년, 중년, 말년)별 운명 리포트
-- **AI 맞춤형 해석**: OpenAI GPT-4o를 통한 개인화된 장문 분석 및 조언
+- **AI 맞춤형 해석**: **Google Gemini (1.5 Flash)**를 통한 개인화된 장문 분석 및 조언
 - **프리미엄 UI/UX**: 미드나잇 갤럭시 & 골드 테마의 고품격 웹 인터페이스
 
 ---
@@ -30,9 +30,9 @@
 
 - **Backend**: Python 3.9+ (Flask Framework)
 - **Frontend**: HTML5, CSS3 (Custom Luxury Design), JavaScript
-- **AI Engine**: OpenAI GPT-4o API
+- **AI Engine**: **Google Gemini Pro / Flash API**
 - **Deployment**: Vercel (Python Runtime)
-- **Library**: `korean-lunar-calendar` (음양력 변환 및 만세력 로직)
+- **Library**: `korean-lunar-calendar` (음양력 변환 및 만세력 로직), `google-generativeai`
 
 ---
 
@@ -47,7 +47,7 @@ cd godsaeng-saju
 pip install -r requirements.txt
 
 # 3. 환경 변수 설정 (.env 파일 생성)
-OPENAI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # 4. 로컬 서버 실행
 python app.py
@@ -60,7 +60,7 @@ python app.py
 ```
 ├── app.py              # Flask 서버 및 라우팅 제어
 ├── saju_logic.py       # 천간지지 및 만세력 계산 핵심 알고리즘
-├── ai_analysis.py      # OpenAI GPT-4o 연동 및 프롬프트 엔지니어링
+├── ai_analysis.py      # Google Gemini AI 연동 및 프롬프트 엔지니어링
 ├── vercel.json         # Vercel 배포 설정 파일
 ├── static/             # 이미지, 스타일시트 및 정적 자산
 └── templates/          # Jinja2 템플릿 (index, result, loading 등)
@@ -78,7 +78,7 @@ python app.py
 
 ## ⚠️ 주의사항
 
-1. **API 키 관리**: `.env` 파일에 유효한 OpenAI API 키가 설정되어 있어야 AI 분석 기능이 작동합니다.
+1. **API 키 관리**: `.env` 파일에 유효한 Gemini API 키가 설정되어 있어야 AI 분석 기능이 작동합니다.
 2. **배포 환경**: Vercel Python Runtime 환경에 최적화되어 있습니다.
 3. **데이터 소스**: 한국 천문연구원의 데이터를 기반으로 정밀하게 계산됩니다.
 
