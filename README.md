@@ -1,43 +1,56 @@
-# 별하 (Byeolha) - 사주풀이 프로그램
+# GLOW글로우:갓생사주 - 운명을 읽고 나를 켜다 ✨
 
 <p align="center">
-  <strong>당신의 운명을 비추는 별 ✨</strong>
+  <img src="static/icon.png" width="128" alt="GLOW Logo">
+  <br>
+  <strong>우주의 기운과 당신의 갓생(God Saeng)을 연결하는 프리미엄 사주 서비스</strong>
 </p>
 
 ---
 
 ## 📖 소개
 
-**별하(Byeolha)**는 AI 기반 심층 사주 분석 웹 서비스입니다. 전통 명리학의 사주팔자 계산과 현대적인 GPT-4o AI 분석을 결합하여, 풍부하고 개인화된 운세 분석을 제공합니다.
+**GLOW글로우:갓생사주**는 전통 명리학의 깊이 있는 분석과 현대적인 AI 기술(GPT-4o)을 결합한 차세대 사주 분석 웹 서비스입니다. 당신의 타고난 기운을 정교하게 계산하고, 갓생을 향한 운명의 지도를 프리미엄 다크 테마 디자인과 함께 제공합니다.
 
 ---
 
 ## ✨ 주요 기능
 
-- **사주 원국 계산**: 년/월/일/시주 자동 계산
-- **오행 분석**: 목/화/토/금/수 분포 및 밸런스 진단
-- **십성 판정**: 8개 글자의 십신(십성) 관계 분석
-- **대운 분석**: 10년 주기 8회 = 80년 운세
-- **근묘화실**: 생애 4단계 (초년/청년/중년/말년) 분석
-- **오늘의 운세**: 일간 기반 맞춤 운세
-- **AI 심층 분석**: GPT-4o 기반 장문 해석
+- **사주 원국 정밀 계산**: 년/월/일/시주 자동 천간지지 계산 및 만세력 연동
+- **오행 분포 분석**: 목(木)/화(火)/토(土)/금(金)/수(水) 기운의 밸런스 및 분포 진단
+- **십성(십신) 판정**: 사주 8개 글자 간의 관계(비견, 겁재, 식신 등) 심층 분석
+- **대운 흐름 분석**: 10년 주기 대운 흐름 및 인생의 주요 변곡점 가이드
+- **근묘화실(根苗花實)**: 생애 4단계(초년, 청년, 중년, 말년)별 운명 리포트
+- **AI 맞춤형 해석**: OpenAI GPT-4o를 통한 개인화된 장문 분석 및 조언
+- **프리미엄 UI/UX**: 미드나잇 갤럭시 & 골드 테마의 고품격 웹 인터페이스
+
+---
+
+## 🛠️ 기술 스택
+
+- **Backend**: Python 3.9+ (Flask Framework)
+- **Frontend**: HTML5, CSS3 (Custom Luxury Design), JavaScript
+- **AI Engine**: OpenAI GPT-4o API
+- **Deployment**: Vercel (Python Runtime)
+- **Library**: `korean-lunar-calendar` (음양력 변환 및 만세력 로직)
 
 ---
 
 ## 🚀 빠른 시작
 
 ```bash
-# 1. 패키지 설치
+# 1. 저장소 클론
+git clone https://github.com/tinleygarden/godsaeng-saju.git
+cd godsaeng-saju
+
+# 2. 필수 라이브러리 설치
 pip install -r requirements.txt
 
-# 2. API 키 설정
-echo "OPENAI_API_KEY=sk-your-key" > .env
+# 3. 환경 변수 설정 (.env 파일 생성)
+OPENAI_API_KEY=your_api_key_here
 
-# 3. 서버 시작
+# 4. 로컬 서버 실행
 python app.py
-
-# 4. 브라우저 접속
-# http://127.0.0.1:5000
 ```
 
 ---
@@ -45,64 +58,33 @@ python app.py
 ## 📁 프로젝트 구조
 
 ```
-├── app.py              # Flask 메인 앱
-├── saju_logic.py       # 사주 계산 로직
-├── ai_analysis.py      # GPT-4o AI 분석
-├── requirements.txt    # 의존성
-├── .env                # API 키
-├── static/
-│   └── style.css       # 스타일
-└── templates/
-    ├── index.html      # 입력 폼
-    ├── loading.html    # 로딩 화면
-    └── result.html     # 결과 화면
+├── app.py              # Flask 서버 및 라우팅 제어
+├── saju_logic.py       # 천간지지 및 만세력 계산 핵심 알고리즘
+├── ai_analysis.py      # OpenAI GPT-4o 연동 및 프롬프트 엔지니어링
+├── vercel.json         # Vercel 배포 설정 파일
+├── static/             # 이미지, 스타일시트 및 정적 자산
+└── templates/          # Jinja2 템플릿 (index, result, loading 등)
 ```
 
 ---
 
-## 📄 명세 문서
+## 🎨 디자인 시스템
 
-| 문서 | 설명 |
-|------|------|
-| [01_프로젝트_개요.md](01_프로젝트_개요.md) | 프로젝트 구조 및 실행 방법 |
-| [02_백엔드_사주로직_명세.md](02_백엔드_사주로직_명세.md) | saju_logic.py 알고리즘 |
-| [03_백엔드_AI분석_명세.md](03_백엔드_AI분석_명세.md) | GPT 프롬프트 및 응답 구조 |
-| [04_백엔드_Flask앱_명세.md](04_백엔드_Flask앱_명세.md) | 라우팅 및 데이터 흐름 |
-| [05_프론트엔드_UI명세.md](05_프론트엔드_UI명세.md) | HTML/CSS 상세 명세 |
-| [06_데이터구조_명세.md](06_데이터구조_명세.md) | 코드 간 데이터 구조 |
-| [07_전체_소스코드.md](07_전체_소스코드.md) | 완전한 소스코드 |
-
----
-
-## 🛠️ 기술 스택
-
-- **Backend**: Python Flask
-- **AI**: OpenAI GPT-4o
-- **Calendar**: korean-lunar-calendar
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Chart**: Chart.js (레이더 차트)
-- **Font**: Pretendard
-- **Icons**: Font Awesome 6.0
-
----
-
-## 🎨 디자인
-
-- **테마**: 파스텔 보라/핑크 그라데이션
-- **스타일**: 글라스모피즘
-- **배경**: 크림색 (#fdfbf7)
-- **액센트**: #a78bfa (보라), #f472b6 (핑크)
+- **Main Theme**: Midnight Galaxy Dark (#0f172a)
+- **Accent Color**: Celestial Gold (#fbbf24) & Stardust Rose
+- **Concept**: 고전적인 신비로움과 현대적인 고급스러움의 조화 (Premium Glassmorphism)
 
 ---
 
 ## ⚠️ 주의사항
 
-1. **API 키**: `.env` 파일에 본인의 OpenAI API 키를 설정하세요.
-2. **비용**: GPT-4o API 호출 시 비용이 발생합니다.
-3. **타임아웃**: AI 분석은 최대 120초까지 소요될 수 있습니다.
+1. **API 키 관리**: `.env` 파일에 유효한 OpenAI API 키가 설정되어 있어야 AI 분석 기능이 작동합니다.
+2. **배포 환경**: Vercel Python Runtime 환경에 최적화되어 있습니다.
+3. **데이터 소스**: 한국 천문연구원의 데이터를 기반으로 정밀하게 계산됩니다.
 
 ---
 
-## 📝 라이선스
+## 📄 라이선스
 
-개인 프로젝트용. 상업적 사용 시 별도 협의 필요.
+&copy; 2026 GLOW GOD SAENG SAJU. All rights reserved.
+개인 프로젝트 및 비상업적 용도로 활용이 가능하며, 상업적 이용 시 별도 협의가 필요합니다.
