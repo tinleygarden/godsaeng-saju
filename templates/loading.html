@@ -164,10 +164,20 @@
         const msgEl = document.getElementById('loading-msg');
         function rotate() {
             msgEl.classList.remove('visible');
-            setTimeout(() => { idx = (idx + 1) % messages.length; msgEl.textContent = messages[idx]; msgEl.classList.add('visible'); }, 500);
+            setTimeout(() => {
+                idx = (idx + 1) % messages.length;
+                msgEl.textContent = messages[idx];
+                msgEl.classList.add('visible');
+            }, 500);
         }
         setInterval(rotate, 3000);
-        window.addEventListener('DOMContentLoaded', () => { setTimeout(() => { window.location.replace('/result'); }, 300); });
+
+        // 세션 방식에 맞춰 GET으로 결과 페이지 호출 (405 에러 방지)
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                window.location.replace('/result');
+            }, 300);
+        });
     </script>
 </body>
 
